@@ -51,8 +51,15 @@ int tju_recv (tju_tcp_t* sock, void *buffer, int len);
 这里涉及到四次挥手
 */
 int tju_close (tju_tcp_t* sock);
-
-
 int tju_handle_packet(tju_tcp_t* sock, char* pkt);
+void handle_syn(tju_tcp_t* listen_socks,char* pkt);
+void timer_2msl(tju_tcp_t* sock);
+void* msl_timer_thread(void* arg);
+void free_socket_resources(tju_tcp_t* sock);
+void build_tcp_header(tju_header_t* header, 
+                     tju_tcp_t* sock, 
+                     uint8_t flags, 
+                     uint32_t ack_num);
+void send_tcp_packet(tju_tcp_t* sock, uint8_t flags, uint32_t ack_num) ;                     
 #endif
 

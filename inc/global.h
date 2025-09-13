@@ -16,6 +16,8 @@
 #include <sys/select.h>
 #include <arpa/inet.h>
 
+//最大报文段生存时间
+#define MSL 2000
 // 单位是byte
 #define SIZE32 4
 #define SIZE16 2
@@ -97,7 +99,7 @@ typedef struct {
 // TJU_TCP 结构体 保存TJU_TCP用到的各种数据
 typedef struct {
 	int state; // TCP的状态
-
+	int to_be_free;//当前socket是否可被释放
 	tju_sock_addr bind_addr; // 存放bind和listen时该socket绑定的IP和端口
 	tju_sock_addr established_local_addr; // 存放建立连接后 本机的 IP和端口
 	tju_sock_addr established_remote_addr; // 存放建立连接后 连接对方的 IP和端口

@@ -8,9 +8,9 @@
 
 #define MAX_SOCK 32
 tju_tcp_t* listen_socks[MAX_SOCK];
-tju_tcp_t* half_conn_socks[MAX_SOCK];
 tju_tcp_t* established_socks[MAX_SOCK];
-
+tju_tcp_t* synqueue[MAX_SOCK];
+tju_tcp_t* acceptqueue[MAX_SOCK];
 /*
 模拟Linux内核收到一份TCP报文的处理函数
 */
