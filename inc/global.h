@@ -118,7 +118,7 @@ typedef struct {
 	pthread_cond_t wait_cond; // 可以被用来唤醒recv函数调用时等待的线程
 
 	window_t window; // 发送和接受窗口
-
+	char* packet_FIN;//重传包
 } tju_tcp_t;
 
 #endif

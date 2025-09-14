@@ -57,6 +57,7 @@ void timer_2msl(tju_tcp_t* sock);
 void* msl_timer_thread(void* arg);
 void free_socket_resources(tju_tcp_t* sock);
 uint16_t random_port();
+void* tju_close_thread(void* arg);
 //void send_tcp_flags(tju_tcp_t* sock, uint8_t flags, uint32_t seq,uint32_t ack) ;                     
 #endif
 
