@@ -17,8 +17,8 @@
 #include <arpa/inet.h>
 
 //定义server与client 地址
-#define SERVER_IP "172.17.0.3"
-#define CLIENT_IP "172.17.0.2"
+#define SERVER_IP "172.17.0.6"
+#define CLIENT_IP "172.17.0.5"
 //最大报文段生存时间
 #define MSL 2000
 // 单位是byte
