@@ -24,7 +24,6 @@ tju_tcp_t* tju_socket(){
 
     sock->window.wnd_send = NULL;
     sock->window.wnd_recv = NULL;
-    sock->packet_FIN=NULL;
     return sock;
 }
 
@@ -92,41 +91,32 @@ int tju_connect(tju_tcp_t* sock, tju_sock_addr target_addr){
     //local_addr.port = 5678; 要随机分配一个端口
     local_addr.port = random_port();
     sock->established_local_addr = local_addr;
+    /*第一次握手*/
     //向客户端发送SYN
-    //tju_send(sock,NULL,0,SYN_FLAG_MASK);
-    uint32_t seq=0;//初始化序列号 ISN
+    uint32_t seq=ISN;//初始化序列号 ISN
     uint32_t ack=0;//其实这里应该没有ack的
-    //send_tcp_flags(sock,SYN_FLAG_MASK,seq,ack); 
     char* syn_flags=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, SYN_FLAG_MASK, 1, 0, NULL, 0);
     sendToLayer3(syn_flags,DEFAULT_HEADER_LEN);
     sock->state=SYN_SENT;
+    // 将建立了连接的socket放入内核 已建立连接哈希表中
     int hashval = cal_hash(local_addr.ip, local_addr.port, target_addr.ip, target_addr.port);
         established_socks[hashval] = sock;
-    //循环等待直到接收到SYN+ACK
-    // while(sock->state!=ESTABLISHED){
-    //     usleep(10);
-    // }
-    //优化 不直接使用usleep函数 设置简单超时重传机制
-    //其实就是简单忙等待 ppt提供的有点没看懂
+    //简单的超时重传
     struct timeval start,current;
     long timeout=3;
     gettimeofday(&start,NULL);
     while(sock->state!=ESTABLISHED){
         gettimeofday(&current,NULL);
         long elapsed = (current.tv_sec - start.tv_sec) +   
-                       (current.tv_usec - start.tv_usec) / 1000000.0; //
+                       (current.tv_usec - start.tv_usec) / 1000000.0; 
         if(elapsed>timeout){
             //超时重传
             sendToLayer3(syn_flags,DEFAULT_HEADER_LEN);
             gettimeofday(&start,NULL);//将start重置为当前时间
         }
     }
-    // 将建立了连接的socket放入内核 已建立连接哈希表中
-    // int hashval = cal_hash(local_addr.ip, local_addr.port, target_addr.ip, target_addr.port);
-    // established_socks[hashval] = sock;
     return 0;
 }
-
 int tju_send(tju_tcp_t* sock, const void *buffer, int len){
     // 这里当然不能直接简单地调用sendToLayer3
     char* data = malloc(len);
@@ -176,131 +166,122 @@ int tju_recv(tju_tcp_t* sock, void *buffer, int len){
 }
 
 int tju_handle_packet(tju_tcp_t* sock, char* pkt){
-    
-    uint32_t data_len = get_plen(pkt) - DEFAULT_HEADER_LEN;
     uint8_t flags=get_flags(pkt);//得到header中的标志位
-    //进行识别 
-    //注意这里还要判断是否是已经连接的 直接使用state识别
-    if(sock->state==ESTABLISHED){
-    // server 接受到FIN 发送ACK 进入CLOSE_WAIT
-    if(flags&FIN_FLAG_MASK){
-        uint32_t ack=get_seq(pkt)+1;
-        uint32_t seq=get_ack(pkt);
-        sock->state=CLOSE_WAIT;
-        //tju_send(sock,NULL,0,ACK_FLAG_MASK);
-        char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
-        sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
-        //此时socket处于半关闭状态 server还可以发送数据
-        //server需要将剩余的数据处理完 再调用close发送FIN
-        //usleep(500000);// 然后等待1s 发FIN ACK
-        sleep(1);
-        // //等待完成后直接发送FIN+ACK 注意ack一致
-         char* fin_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),0,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,(ACK_FLAG_MASK|FIN_FLAG_MASK),1,0,NULL,0);
-         sendToLayer3(fin_ack_flags,DEFAULT_HEADER_LEN);
-         sock->state=LAST_ACK;
-         sock->packet_FIN = fin_ack_flags;
-
-        pthread_t id;
-        int rst=pthread_create(&id,NULL,tju_close_thread,(void*)sock);
-        if(rst<0){
-            exit(-1);
+    if(sock->state==LISTEN){
+        /*第二次握手*/
+        if(flags&SYN_FLAG_MASK){
+            handle_syn(sock,pkt);//这里的sock是listen socks 
+            //这里sock仍然时LISTEN 因为改变状态的是新创建socket
+        }
+        /*已完成三次握手 服务器最后接收ACK*/
+        else if(flags&ACK_FLAG_MASK){
+            //sock仍然是LISTEN 会有一个新创建的socket作为服务器响应的sock
+            //将半连接队列中的socket转入全连接队列
+            uint16_t remote_port = get_src(pkt);  // 客户端端口
+            uint16_t local_port = get_dst(pkt);   // 服务端端口
+            uint32_t remote_ip = inet_network(CLIENT_IP);//客户端
+            uint32_t local_ip = sock->bind_addr.ip;//sock通道是一直不变的 只是pkt会变
+            int hashval = cal_hash(local_ip, local_port, remote_ip, remote_port);
+            tju_tcp_t* synsock = synqueue[hashval];//把之前放进去的新创建socket找出来
+            if(synsock==NULL){
+                printf("未找到对应半连接!");
+                return -1;
+            }
+            //将该socket状态改为ESTABLISHED
+            synsock->state=ESTABLISHED;
+            //移动到全连接表
+            acceptqueue[hashval] = synsock;
+            synqueue[hashval] = NULL;
         }
     }
-    
-    }else if(sock->state==LISTEN&&(flags&SYN_FLAG_MASK)){
-        handle_syn(sock,pkt);//这里的sock是listen socks 
-        //这里sock仍然时LISTEN 因为改变状态的是新创建socket
-    }else if(sock->state==SYN_SENT&&(flags == (SYN_FLAG_MASK | ACK_FLAG_MASK)) ){
-        //这里处理的是客户端的
-        uint32_t ack=get_ack(pkt);//ack=x+1
-        uint32_t seq=get_seq(pkt);//seq=y
+    /*第三次握手 client*/
+    else if(sock->state==SYN_SENT&&(flags == (SYN_FLAG_MASK | ACK_FLAG_MASK)) ){
+        uint32_t seq=get_ack(pkt);//seq=y
+        uint32_t ack=get_seq(pkt)+1;//ack=x+1
         sock->state=ESTABLISHED;
-        //回复ACK 第三次握手
-        //tju_send(sock,NULL,0,ACK_FLAG_MASK); 源和端要调换
-        char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),ack,seq+1,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, ACK_FLAG_MASK, 1, 0, NULL, 0);
+        char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, ACK_FLAG_MASK, 1, 0, NULL, 0);
         sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
     }
-    //
-    else if(sock->state==LISTEN&&(flags&ACK_FLAG_MASK)){
-        //sock仍然是LISTEN 但已完成三次握手 服务器最后接收ACK
-        //将半连接队列中的socket转入全连接队列
-        uint16_t remote_port = get_src(pkt);  // 客户端端口
-        uint16_t local_port = get_dst(pkt);   // 服务端端口
-        uint32_t remote_ip = inet_network(CLIENT_IP);//客户端
-        uint32_t local_ip = sock->bind_addr.ip;//sock通道是一直不变的 只是pkt会变
-        int hashval = cal_hash(local_ip, local_port, remote_ip, remote_port);
-        tju_tcp_t* synsock = synqueue[hashval];//把之前放进去的新创建socket找出来
-        if(synsock==NULL){
-            printf("未找到对应半连接!");
-            return -1;
+    /*连接关闭 四次挥手*/
+     /*第二次挥手*/
+    else if(sock->state==ESTABLISHED){
+        if(flags&FIN_FLAG_MASK){
+            // server 接受到FIN 发送ACK 进入CLOSE_WAIT
+            uint32_t ack=get_seq(pkt)+1;
+            uint32_t seq=get_ack(pkt);
+            sock->state=CLOSE_WAIT;
+            char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
+            sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
+            //此时socket处于半关闭状态 server还可以发送数据
+            //server需要将剩余的数据处理完 再调用close发送FIN
+            sleep(1);// 然后等待1s 发FIN+ACK
+            
+             /*第三次挥手*/
+             //等待完成后直接发送FIN+ACK 注意ack一致
+            char* fin_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),0,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,(ACK_FLAG_MASK|FIN_FLAG_MASK),1,0,NULL,0);
+            sendToLayer3(fin_ack_flags,DEFAULT_HEADER_LEN);
+            sock->state=LAST_ACK;
+            sock->packet_FIN = fin_ack_flags;
         }
-        //将该socket状态改为ESTABLISHED
-        synsock->state=ESTABLISHED;
-        //移动到全连接表
-        acceptqueue[hashval] = synsock;
-        synqueue[hashval] = NULL;
     }
-    /*下面添加关闭处理 这是在客户端中*/
     else if(sock->state==FIN_WAIT_1){
+        /*第二次挥手 接收到ACK*/
+        /*要注意这里要和同时关闭接收到FIN信号区分！不然会导致无法正确判断
+        因为同时关闭接收到的信号是FIN+ACk 要么要求不等于要么加上两者条件提前*/
         //client接收到ACK 进入FIN_WAIT_2 
         if(flags&ACK_FLAG_MASK&&!(flags & FIN_FLAG_MASK)){
         sock->state=FIN_WAIT_2;
         }
-        //client和server同时关闭的情况
+        /*client和server同时关闭的情况*/
         else if (flags&FIN_FLAG_MASK)
         {
-            //char* fin_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),get_ack(pkt),1,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,FIN_FLAG_MASK|ACK_FLAG_MASK,1,0,NULL,0);
-            //sendToLayer3(fin_ack_flags,DEFAULT_HEADER_LEN);
-            //状态变为closing
-            //sleep(1);s
-            sock->state=CLOSING;
             //收到FIN 继续发送ACK
-            uint32_t ack=get_seq(pkt)+1;//
+            uint32_t ack=get_seq(pkt)+1;
             uint32_t seq=1;//此时
             char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
             sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
             sock->packet_FIN=ack_flags;
-            Timeout_retransmission(sock, CLOSED, ack_flags, DEFAULT_HEADER_LEN);
-        }
-        else if(flags==(FIN_FLAG_MASK|ACK_FLAG_MASK)){
             sock->state=CLOSING;
-            uint32_t ack=get_seq(pkt)+1;
-            uint32_t seq=get_ack(pkt)+1;
-            char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
-            sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
-            sock->packet_FIN=ack_flags;
             Timeout_retransmission(sock, CLOSED, ack_flags, DEFAULT_HEADER_LEN);
         }
-        
-    }else if(sock->state==FIN_WAIT_2&&(flags==(FIN_FLAG_MASK|ACK_FLAG_MASK))){
+        // else if(flags==(FIN_FLAG_MASK|ACK_FLAG_MASK)){
+        //     sock->state=CLOSING;
+        //     uint32_t ack=get_seq(pkt)+1;
+        //     uint32_t seq=get_ack(pkt)+1;
+        //     char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
+        //     sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
+        //     sock->packet_FIN=ack_flags;
+        //     Timeout_retransmission(sock, CLOSED, ack_flags, DEFAULT_HEADER_LEN);
+        // }
+    }
+    /*第四次握手*/
+    else if(sock->state==FIN_WAIT_2&&(flags==(FIN_FLAG_MASK|ACK_FLAG_MASK))){
         /*client接收到FIN+ACK 进入TIME_WAIT 并发送最后一个ACK
-        并启动2MSL时间定时器 超时后进进入closed 彻底关闭连接                     */
-        //tju_send(sock,NULL,0,ACK_FLAG_MASK);
+        并启动2MSL时间定时器 超时后进进入closed 彻底关闭连接*/
         uint32_t seq=get_ack(pkt);
         uint32_t ack=get_seq(pkt)+1;
         char* ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,1,0,NULL,0);
-        printf("ACK:%d,Seq:%d\n",ack,seq);
         sendToLayer3(ack_flags,DEFAULT_HEADER_LEN);
         sock->state=TIME_WAIT;//只需要等待是否超时即可
         //启动2MSL定时器 状态变为CLOSED 当然也可以直接休息sleep
         timer_2msl(sock);
-        //usleep(2000000);
-        
-    }else if(sock->state==LAST_ACK&&(flags&ACK_FLAG_MASK)){
+    }
+    /*第四次握手 server接收最后一次ACK*/
+    else if(sock->state==LAST_ACK&&(flags&ACK_FLAG_MASK)){
         sock->state=CLOSED;
         //将socket标记为可释放状态
         sock->to_be_free=1;
-    }//同时处于closing收到ack
+    }
+    /*同时关闭 接收ACK*/
     else if(sock->state==CLOSING){
         if(flags==ACK_FLAG_MASK)//防止随意关闭
         {
             sock->state=TIME_WAIT;
             timer_2msl(sock);
-            //sleep(2);
-            //sock->state=CLOSED;
         }
     }
     // 把收到的数据放到接受缓冲区
+    uint32_t data_len = get_plen(pkt) - DEFAULT_HEADER_LEN;
     while(pthread_mutex_lock(&(sock->recv_lock)) != 0); // 加锁
 
     if(sock->received_buf == NULL){
@@ -314,13 +295,9 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
     pthread_mutex_unlock(&(sock->recv_lock)); // 解锁
     return 0;
 }
-void* tju_close_thread(void* arg){
-    tju_tcp_t* sock=(tju_tcp_t*)arg;
-    tju_close(sock);
-}
+
 int tju_close (tju_tcp_t* sock){
-    clock_t time_point;
-    //if(sock->state==ESTABLISHED)
+    if(sock->state==ESTABLISHED){
         //发送FIN报文
         //tju_send(sock,NULL,0,FIN_FLAG_MASK);
         //这里的seq从收到的pkt得来
@@ -332,51 +309,18 @@ int tju_close (tju_tcp_t* sock){
         sendToLayer3(fin_ack_flags,DEFAULT_HEADER_LEN);
         sock->packet_FIN = fin_ack_flags;
         time_point=clock();
-        
-    //}else if(sock->state==LAST_ACK){
-     //   time_point=clock();
-    //}
-    //  while (sock->state!=CLOSED)
-    //  {   
-    //      if((clock()-time_point)>=8000000){
-    //          //设置重传fin
-    //          //将socket状态改为FIN_WAIT_1
-    //          sendToLayer3(sock->packet_FIN,DEFAULT_HEADER_LEN);
-    //          time_point=clock();
-    //      }
-    //  }
-    //阻塞等待直到状态变CLOSED
-    //ps这里先直接用休眠简单充当一下定时器
+    }
     //这里也要支持超时重传 也是简单的忙等待
-    //  while(sock->state!=CLOSED){
-    //      gettimeofday(&current,NULL);
-    //      long elapsed_sec = current.tv_sec - current_time.tv_sec;
-    //      // 计算经过的时间（微秒）
-    //      long elapsed_usec = current.tv_usec - current_time.tv_usec;
-    //      // 总时间（秒）
-    //      double total_elapsed = elapsed_sec + elapsed_usec / 1000000.0;
-    //      if(total_elapsed>=6){
-    //          //重传当前
-    //          if (sock->state == FIN_WAIT_1 || sock->state == LAST_ACK) {
-    //              uint32_t seq=0;
-    //             uint32_t ack=0;
-    //             char* fin_flags=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,FIN_FLAG_MASK,1,0,NULL,0);
-    //               //将socket状态改为FIN_WAIT_1
-    //             sendToLayer3(fin_flags,DEFAULT_HEADER_LEN);
-    //         }
-    //         printf("重传");
-    //         gettimeofday(&current_time,NULL);
-    //      }
-    //  }
-
-    //关闭 释放资源
-    
+    //阻塞等待直到状态变CLOSED
+    //ps这里先直接用休眠简单充当一下定时
     while(sock->state != CLOSED);
+    //关闭 释放资源
     if(sock->to_be_free==1)
     free_socket_resources(sock);
     
     return 0;
 }
+/*第二次握手*/
 void handle_syn(tju_tcp_t* listen_socks,char* pkt){
     tju_tcp_t* synsock = (tju_tcp_t*)malloc(sizeof(tju_tcp_t));
     memcpy(synsock, listen_socks, sizeof(tju_tcp_t));
@@ -395,34 +339,13 @@ void handle_syn(tju_tcp_t* listen_socks,char* pkt){
     );
     established_socks[hashval]=synsock;//加入ehash列表
     synqueue[hashval]=synsock;
-    uint32_t client_seq = get_seq(pkt); // 客户端发来的 seq
-    //tju_send(synsock,NULL,0,SYN_FLAG_MASK|ACK_FLAG_MASK);
-    //这里是发server
-    int seq=get_seq(pkt);//ack=x+1 seq=y 随机设置为0
-    //send_tcp_flags(synsock,SYN_FLAG_MASK|ACK_FLAG_MASK,0,seq+1);
-    char* syn_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),0,seq+1,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, (SYN_FLAG_MASK|ACK_FLAG_MASK), 1, 0, NULL, 0);
+    uint32_t seq=0;
+    uint32_t ack=get_seq(pkt)+1;//ack=x+1 seq=y 随机设置为0
+    char* syn_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, (SYN_FLAG_MASK|ACK_FLAG_MASK), 1, 0, NULL, 0);
     sendToLayer3(syn_ack_flags,DEFAULT_HEADER_LEN);
     //这里要考虑进制计算 这两个位置同时置1 00010010
 }
-//半连接表的插入/删除操作
-void insert_half_conn(uint32_t local_ip, uint16_t local_port,
-                      uint32_t remote_ip, uint16_t remote_port,
-                      tju_tcp_t* conn) {
-    int hashval = cal_hash(local_ip, local_port, remote_ip, remote_port);
-    synqueue[hashval] = conn;
-}
-
-tju_tcp_t* find_half_conn(uint32_t local_ip, uint16_t local_port,
-                          uint32_t remote_ip, uint16_t remote_port) {
-    int hashval = cal_hash(local_ip, local_port, remote_ip, remote_port);
-    return synqueue[hashval];
-}
-
-void remove_half_conn(uint32_t local_ip, uint16_t local_port,
-                      uint32_t remote_ip, uint16_t remote_port) {
-    int hashval = cal_hash(local_ip, local_port, remote_ip, remote_port);
-    synqueue[hashval] = NULL;
-}
+/*关闭连接回收资源*/
 void free_socket_resources(tju_tcp_t* sock){
     if(sock==NULL)return; //已经为空直接返回
     //释放接收缓存区
@@ -455,7 +378,7 @@ void free_socket_resources(tju_tcp_t* sock){
     //释放socket本身
     free(sock);
 }
-//添加定时器机制
+/*添加定时器机制*/
 void timer_2msl(tju_tcp_t* sock){
     //使用2msl定时器 超时后设置状态为CLOSED
     pthread_t timer_thread;
@@ -469,21 +392,14 @@ void* msl_timer_thread(void* arg){
     return NULL;
 }
 
-// // 发送TCP报文的通用函数
-// void send_tcp_flags(tju_tcp_t* sock, uint8_t flags, uint32_t seq,uint32_t ack) {
-    
-//     char* packet_flags=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, flags, 1, 0, NULL, 0);
-//     sendToLayer3(packet_flags, DEFAULT_HEADER_LEN);
-    
-// }
-//用于生成随机端口 1024-65535
+/*用于生成随机端口 1024-65535*/
 uint16_t random_port(){
     srand((unsigned int) time(NULL));
     uint16_t port=(rand()%(65535-1024+1))+1024;
     return port;
 }
-void Timeout_retransmission(tju_tcp_t* sock, int exp_state, char* pkt, int pktlen) { //超时重传发包函数
-    //printf("bg1\n");
+/*超时重传*/
+void Timeout_retransmission(tju_tcp_t* sock, int exp_state, char* pkt, int pktlen) { 
     long timeout = 100000L;
     struct timeval start_time, end_time;
     gettimeofday(&start_time, NULL);
@@ -495,6 +411,5 @@ void Timeout_retransmission(tju_tcp_t* sock, int exp_state, char* pkt, int pktle
             sendToLayer3(pkt, pktlen);
         }
     }
-    //printf("ed1\n");
 }
 

@@ -16,6 +16,8 @@
 #include <sys/select.h>
 #include <arpa/inet.h>
 
+/*初始化序列号*/
+#define ISN 0
 //定义server与client 地址
 #define SERVER_IP "172.17.0.6"
 #define CLIENT_IP "172.17.0.5"
