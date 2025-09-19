@@ -38,7 +38,8 @@ typedef struct {
 	struct timeval sent_time;
 	char* data;
 } tju_packet_t;
-
+/*添加缓存区 便于重传*/
+tju_packet_t* buf_resend[SENDWND_SIZE];
 
 /*
  输入header所有字段 和 TCP包数据内容及其长度

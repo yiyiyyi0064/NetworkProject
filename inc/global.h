@@ -16,11 +16,13 @@
 #include <sys/select.h>
 #include <arpa/inet.h>
 
+/*发送窗口大小*/
+#define SENDWND_SIZE 1024
 /*初始化序列号*/
 #define ISN 0
 //定义server与client 地址
-#define SERVER_IP "172.17.0.6"
-#define CLIENT_IP "172.17.0.5"
+#define SERVER_IP "172.17.0.3"
+#define CLIENT_IP "172.17.0.2"
 //最大报文段生存时间
 #define MSL 2000
 // 单位是byte
@@ -63,19 +65,18 @@
 // TCP 发送窗口
 // 注释的内容如果想用就可以用 不想用就删掉 仅仅提供思路和灵感
 typedef struct {
-	uint16_t window_size;
-
-//   uint32_t base;
-//   uint32_t nextseq;
-//   uint32_t estmated_rtt;
-//   int ack_cnt;
-//   pthread_mutex_t ack_cnt_lock;
-//   struct timeval send_time;
-//   struct timeval timeout;
-//   uint16_t rwnd; 
-//   int congestion_status;
-//   uint16_t cwnd; 
-//   uint16_t ssthresh; 
+	uint16_t window_size; //发送窗口大小
+	uint32_t base;//发送窗口左边界 即base左侧数据包都已经被确认接收
+	uint32_t nextseq; //下一个要发送的字节的序列号 序列号小于nextseq数据包都已经被发送（未必被确认）
+	uint32_t estmated_rtt;//估算的往返时间
+	int ack_cnt; //重复ACK计数器 实现快速重传
+	pthread_mutex_t ack_cnt_lock; //ack_cnt互斥锁
+	struct timeval send_time;//时间戳
+	struct timeval timeout; //计算出的重传超时时间
+	uint16_t rwnd; //接受方通告的窗口大小 从接受方发来的动态调整 用于流量控制
+//	int congestion_status; 
+//	uint16_t cwnd; 
+//	uint16_t ssthresh; 
 } sender_window_t;
 
 // TCP 接受窗口
@@ -83,10 +84,10 @@ typedef struct {
 typedef struct {
 	char received[TCP_RECVWN_SIZE];
 
-//   received_packet_t* head;
-//   char buf[TCP_RECVWN_SIZE];
-//   uint8_t marked[TCP_RECVWN_SIZE];
-//   uint32_t expect_seq;
+   //received_packet_t* head;
+   char buf[TCP_RECVWN_SIZE];
+   uint8_t marked[TCP_RECVWN_SIZE];
+   uint32_t expect_seq;
 } receiver_window_t;
 
 // TCP 窗口 每个建立了连接的TCP都包括发送和接受两个窗口
@@ -112,7 +113,8 @@ typedef struct {
 	pthread_mutex_t send_lock; // 发送数据锁
 	char* sending_buf; // 发送数据缓存区
 	int sending_len; // 发送数据缓存长度
-
+	int send_index;//下一个写入位置偏移量
+	int send_cleaned_len; //已被发送线程处理的数据长度
 	pthread_mutex_t recv_lock; // 接收数据锁
 	char* received_buf; // 接收数据缓存区
 	int received_len; // 接收数据缓存长度
@@ -120,7 +122,10 @@ typedef struct {
 	pthread_cond_t wait_cond; // 可以被用来唤醒recv函数调用时等待的线程
 
 	window_t window; // 发送和接受窗口
-	char* packet_FIN;//重传包
+	/*重传队列相关*/
+	int packetr; // 队尾指针 (Rear pointer)，指向下一个空闲位置
+    int packetf; // 队头指针 (Front pointer)，指向最早未确认的包
+    pthread_mutex_t retrans_lock; // 保护重传队列的互斥锁
 } tju_tcp_t;
 
 #endif

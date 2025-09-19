@@ -1,5 +1,5 @@
 #include "tju_tcp.h"
-
+int send_thread=0;
 /*
 创建 TCP socket 
 初始化对应的结构体
@@ -118,20 +118,65 @@ int tju_connect(tju_tcp_t* sock, tju_sock_addr target_addr){
     return 0;
 }
 int tju_send(tju_tcp_t* sock, const void *buffer, int len){
-    // 这里当然不能直接简单地调用sendToLayer3
-    char* data = malloc(len);
-    memcpy(data, buffer, len);
-
-    char* msg;
-    uint32_t seq = 464;
-    uint16_t plen = DEFAULT_HEADER_LEN + len;
-
-    msg = create_packet_buf(sock->established_local_addr.port, sock->established_remote_addr.port, seq, 0, 
-              DEFAULT_HEADER_LEN, plen, NO_FLAG, 1, 0, data, len);
-
-    sendToLayer3(msg, plen);
-    
+    if(send_thread==0){
+        send_thread=1;
+        pthread_t SendThreadId;
+        //创建线程用于传输数据
+        int id=pthread_create(&SendThreadId,NULL,send_packet,(void*)sock);
+    }
+    //将数据复制到缓存区中
+    pthread_mutex_lock(&(sock->send_lock));//直接设置锁即可 当资源可用时唤醒
+    //复制
+    memcpy(sock->sending_buf+send_index,(char*)buffer,len);
+    sock->sending_len+=len;//更新缓冲区中总数据量
+    sock->index+=len;//向缓存区中写入len字节 下一次写入位置向后移len字节
+    pthread_mutex_unlock(&(sock->send_lock));
     return 0;
+    
+}
+
+void* send_packet(tju_tcp_t* sock){
+    while (1){
+        if(sock->window.wnd_send->nextseq<sock->send_index){//检查是否有数据待发送       
+            while (pthread_mutex_lock(&(sock->send_lock))!=0);
+            //计算当前未发送的数据长度
+            int unlen=sock->sending_len-(sock->window.wnd_send->nextseq-sock->window.wnd_send->base);
+            //取min 未发送与能发送的最大长度
+            int send_byte=min(unlen,MAX_DLEN);
+            //动态调整中国 最多还能发送多少字节
+            int leftlen=sock->window.wnd_send->rwnd-(sock->window.wnd_send->nextseq-sock->window.wnd_send->base);
+            send_byte=send_byte>leftlen?leftlen:send_byte//取小
+            /*具体实现发送数据包 滑动窗口*/
+            if(sock->window.wnd_send->nextseq-sock->window.wnd_send->base+send_byte<=sock->window.wnd_send->rwnd){//检查当前传输是否超出接受窗口
+                //获取当前序列号并组装报文
+                uint32_t seq=sock->window.wnd_send->nextseq;
+                uint32_t ack=seq+send_byte;//这个变量怎么确定
+                uint8_t flag=ACK_FLAG_MASK;
+                char* data=(char*)malloc(MAX_DLEN);
+                //这个地方没太看懂
+                memcpy(data,sock->sending_buf+sock->window.wnd_send->nextseq,send_byte);
+                //创建TCP报文
+                uint16_t* pkt_len=send_byte+DEFAULT_HEADER_LEN;//本次packet的字节长度
+                tju_packet_t* senddata = create_packet(sock->established_local_addr.port, sock->established_remote_addr.port,seq, ack, DEFAULT_HEADER_LEN, pkt_len, flag, 0, 0, data, len);
+                char* ack_packet=create_packet_buf(sock->established_local_addr.port, sock->established_remote_addr.port,seq, ack, DEFAULT_HEADER_LEN, pkt_len, flag, 0, 0, data, len);
+                sendToLayer3(ack_packet,pkt_len);
+                sock->window.wnd_send->nextseq+=send_byte;//更新nextseq
+                gettimeofday(&buf_resend[sock->packetr]->sent_time,NULL);//更新时间戳
+                buf_resend[sock->packetr]=senddata;
+                sock->packetr=(sock->packetr+1)%SENDWND_SIZE;//更新重传队列尾部index
+                //快速重传重置
+                if (len == (int)(sock->window.wnd_send->nextseq - sock->window.wnd_send->base)){
+                    gettimeofday(&(sock->window.wnd_send->send_time), NULL);
+                    // 重置ACK计数器
+                    while(pthread_mutex_lock(&(sock->window.wnd_send->ack_cnt_lock)) != 0);
+                    sock->window.wnd_send->ack_cnt = 0;
+                    pthread_mutex_unlock(&(sock->window.wnd_send->ack_cnt_lock));
+                    }
+            }
+        }
+        
+    }
+    
 }
 int tju_recv(tju_tcp_t* sock, void *buffer, int len){
     while(sock->received_len<=0){
