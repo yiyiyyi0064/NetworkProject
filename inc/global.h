@@ -122,10 +122,14 @@ typedef struct {
 	pthread_cond_t wait_cond; // 可以被用来唤醒recv函数调用时等待的线程
 
 	window_t window; // 发送和接受窗口
+	/*缓存乱序报文*/
+	char unorder[100][MAX_LEN];//乱序报文
+	int unolen;//乱序报文数
 	/*重传队列相关*/
 	int packetr; // 队尾指针 (Rear pointer)，指向下一个空闲位置
     int packetf; // 队头指针 (Front pointer)，指向最早未确认的包
     pthread_mutex_t retrans_lock; // 保护重传队列的互斥锁
+
 } tju_tcp_t;
 
 #endif
