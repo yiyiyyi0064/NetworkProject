@@ -60,5 +60,12 @@ uint16_t random_port();
 void* tju_close_thread(void* arg);
 void Timeout_retransmission(tju_tcp_t* sock, int exp_state, char* pkt, int pktlen);
 //void send_tcp_flags(tju_tcp_t* sock, uint8_t flags, uint32_t seq,uint32_t ack) ;                     
+/*RDT可靠传输*/
+void* send_packet(tju_tcp_t* sock);
+void* resend_pkt(tju_tcp_t* sock);
+void serverdt(tju_tcp_t* sock,char* pkt);
+void clientrdt(tju_tcp_t* sock,char* pkt);
+void seq_swap(char** pkt_a,char** pkt_b);
+
 #endif
 
