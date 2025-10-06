@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
     // 开启仿真环境 
     startSimulation();
 
-    tju_tcp_t* my_socket = tju_socket();
+    tju_tcp_t* my_socket = tju_socket();//创建之后就会一直使用这个socket
     // printf("my_tcp state %d\n", my_socket->state);
     
     tju_sock_addr target_addr;
