@@ -59,6 +59,11 @@ void free_socket_resources(tju_tcp_t* sock);
 uint16_t random_port();
 void* tju_close_thread(void* arg);
 void Timeout_retransmission(tju_tcp_t* sock, int exp_state, char* pkt, int pktlen);
+void* send_pkt_thread(void* arg);
+void* resend_pkt_thread(void* arg);
+void check_pkt_timeout(tju_tcp_t* sock);
+void check_cached_pkt(tju_tcp_t* sock);
+void my_swap(char** a,char** b);
 //void send_tcp_flags(tju_tcp_t* sock, uint8_t flags, uint32_t seq,uint32_t ack) ;                     
 #endif
 

@@ -64,19 +64,53 @@
 
 // TCP 接受窗口大小
 #define TCP_RECVWN_SIZE 32*MAX_DLEN // 比如最多放32个满载数据包
+#define MAX_WND_SIZE	32*MAX_DLEN
+/*受限的SR实现*/
+typedef struct{
+	uint32_t seq_num; //序列号
+	char* data;		  //数据
+	size_t data_len;	//数据长度
+	struct timeval send_time;	//发送时间
+	bool acked;			//是否已确认
+	int retransmit_count;	//重传次数	
+}sr_packet_t;
+/*RTT统计与重传控制*/
+typedef struct{
+	/*RTT统计数据*/
+   	struct timeval send_time;
+   	struct itimeval timeout;
+	//RTT状态统计
+	int rtt_initialized;
+	int retransmitted_in_flight;
+	//RTT估计值 
+	long estmated_rtt;   // microseconds - 平滑RTT
+    long dev_rtt;   
+	long estimated_rtt_ms; //平滑RTT
+	long dev_rtt_ms ;	//RTT偏差
+	long timeout_interval_ms; //超时间隔
 
+	long rto_ms;
+
+}rtt_stats_t;
 // TCP 发送窗口
 // 注释的内容如果想用就可以用 不想用就删掉 仅仅提供思路和灵感
 typedef struct {
 	uint16_t window_size;
-
     uint32_t base;
    	uint32_t nextseq;
    	uint32_t estmated_rtt;
+	int same_ack_cnt;
    	int ack_cnt;
    	pthread_mutex_t ack_cnt_lock;
-   	struct timeval send_time;
-   	struct timeval timeout;
+	// 重传统计
+    uint32_t total_retransmissions;
+    uint32_t timeout_retransmissions;
+    uint32_t fast_retransmissions;
+	struct timeval send_time;
+   	struct itimeval timeout;
+	//SR实现
+	sr_packet_t* packets[MAX_WND_SIZE];
+	pthread_mutex_t mutex;//发送包的缓存锁
    	uint16_t rwnd;
    	int congestion_status;
   	uint16_t cwnd; 
@@ -129,6 +163,10 @@ typedef struct {
 
 	window_t window; // 发送和接受窗口
 	char* packet_FIN;//重传包
+	rtt_stats_t rtt_stats;
+	/*管理快速重传*/
+	int fast_retransmit;
+	uint32_t fast_retransmit_seq;//需要快速重传的seq
 	/*管理乱序pkt*/
 	char unorder[100][MAX_LEN];
 	int unolen;//乱序报文个数

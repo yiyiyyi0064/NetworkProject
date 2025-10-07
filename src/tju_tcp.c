@@ -8,7 +8,19 @@ static int send_thread_created = 0;
 tju_tcp_t* tju_socket(){
     tju_tcp_t* sock = (tju_tcp_t*)malloc(sizeof(tju_tcp_t));
     sock->state = CLOSED;
-    
+    /*初始化窗口*/
+    if (sock->window.wnd_send == NULL) {
+        sock->window.wnd_send = malloc(sizeof(sender_window_t));
+    }
+    sender_window_t* send_win=sock->window.wnd_send;
+    send_win->base=0;//初始化为0
+    send_win->nextseq=send_win->base;
+    send_win->window_size=MAX_WND_SIZE;
+    //初始化pkt缓存数组
+    for (int i = 0; i < MAX_WINDOW_SIZE; i++) {
+        send_win->packets[i] = NULL;
+    }
+    pthread_mutex_init(&send_win->mutex, NULL);
     pthread_mutex_init(&(sock->send_lock), NULL);
     sock->sending_buf = NULL;
     sock->sending_len = 0;
@@ -184,8 +196,14 @@ void* send_pkt_thread(void* arg){
                 sendToLayer3(pkt_whole,plen);
                 printf("发送数据seq=%d,dlen=%d\n",seq,dlen);
                 data_send_len=0;//发送完后置0
+                //还要注意这里要把包加入缓冲区
+                cache_pkt(sock,seq,data,dlen);
                 //这里应该要启动计时器 超时重传机制
-                if(sock->window.wnd_send->base==seq) startTimer(sock);
+                if(sock->window.wnd_send->base==seq){
+                    gettimeofday(&sock->window.wnd_send->send_time,NULL); //记录发送时间
+                    sock->window.wnd_send->retransmitted_in_flight=0;//标记无重传
+                    startTimer(sock);
+                }
                 //成功发送 nextseq需要往前推 这个必须在之后 否则计时器无法正常启动
                 sock->window.wnd_send->nextseq+=dlen;
             }//无法一次发送完成 需要分包
@@ -204,6 +222,7 @@ void* send_pkt_thread(void* arg){
                     sendToLayer3(pkt_part,plen);
                     free(pkt_part);
                     printf("发送数据seq=%d,dlen=%d\n",seq,dlen);
+                    cache_pkt(sock,seq,data,dlen);
                     if(sock->window.wnd_send->base==seq) startTimer(sock);
                     data_send_len-=dlen;
                     data=data+dlen;
@@ -323,7 +342,6 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                 char* ack_pkt=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,adv_wnd,0,NULL,0);
                 sendToLayer3(ack_pkt,DEFAULT_HEADER_LEN);
                 free(ack_pkt);*/
-            
             }
             /*SR相关处理*/
             //收到seq乱序但仍在接收窗口内 不直接丢弃 而是缓存乱序pkt
@@ -346,6 +364,85 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                 uint32_t adv_wnd=TCP_RECVWN_SIZE-(sock->unolen)*MAX_DLEN;
                 char* ack_pkt=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,flags,TCP_RECVWN_SIZE-(sock->unolen)*MAX_DLEN,0,NULL,0);
                 sendToLayer3(ack_pkt,DEFAULT_HEADER_LEN);
+            }
+        }
+        /*接收ACK报文 也是SR机制重点部分*/
+        else if(flags==ACK_FLAG_MASK){
+            sender_window_t* send_win=sock->window.wnd_send;
+            rtt_stats_t* rtt = &sock->rtt_stats;
+            //收到ACK在窗口外 丢弃
+            if(get_ack(pkt)<sock->window.wnd_send->base){
+                printf("收到ACK报文在接收窗口外 丢弃\n");
+                //return;
+            }//收到重复ack 等于当前base
+            else if(get_ack(pkt)==sock->window.wnd_send->base){
+                printf("收到重复ACK报文 ACK=%d\n",get_ack(pkt));
+                //快速重传 ack-cnt=3
+                sock->window.wnd_send->same_ack_cnt++;
+                if(sock->window.wnd_send->same_ack_cnt==3){
+                    sock->fast_retransmit=1;
+                    sock->fast_retransmit_seq=send_win->base;//这里需要设置快速重传seq
+                    //这里直接调用快速重传函func 或 等待重传线程判断 均可
+                    sock->window.wnd_send->same_ack_cnt=0;//重新置零
+                }
+            }//大于base可以更新
+            else{
+                printf("收到有效ACK报文 ACK=%d\n",get_ack(pkt));
+                sock->window.wnd_send->base=get_ack(pkt);//直接将base设为当前ack
+                sock->window.wnd_send->ack_cnt=sock->window.wnd_send->base-1;//更新已经确认了的数据
+                sock->window.wnd_send->window_size=get_advertised_window(pkt);//流量控制 根据pkt反馈改变发送窗口大小
+                //这里累积确认之后 需要立即标记已经确认的包 小于当前ack的都是已经确认过的
+                pthread_mutex_lock(&send_win->mutex);
+                int packets_acked=0,packets_freed=0;
+                for(int i=0;i<MAX_WND_SIZE;i++){
+                    sr_packet_t* packet=send_win->packets[i];
+                    if(packet!=NULL&&!packet->acked&&(packet->seq_num<get_ack(pkt))){
+                        //printf("确认并清理包：seq=%d\n",packet->seq_num);
+                        packet->acked=TRUE;
+                        packets_acked++;
+                        //立即释放内存
+                        if(packet->data!=NULL){
+                            free(packet->data);
+                            packet->data=NULL;
+                        }
+                        free(packet);
+                        send_win->packets[i]=NULL;
+                        packets_freed++;
+                    }
+                }
+                //结束计时 更新RTT与RTO
+                //确定用于RTT计算的pkt 即序列号正好被ack确认的pkt
+                sr_packet_t* find_pkt=find_pkt_rtt(send_win,get_ack(pkt));
+                if(find_pkt==NULL){
+                    pthread_mutex_unlock(&send_win->mutex);
+                    return;
+                }
+                //跳过重传包的RTT计算
+                if(find_pkt->retransmit_count>0||rtt->retransmitted_in_flight){
+                    rtt->retransmitted_in_flight=0;
+                    pthread_mutex_unlock(&send_win->mutex);
+                    return;
+                }
+                //计算Sample_RTT
+                struct timeval nowtime;
+                gettimeofday(&nowtime,NULL);
+                long rtt_sample_us=(now.tv_sec - packet->send_time.tv_sec) * 1000000L + 
+                        (now.tv_usec - packet->send_time.tv_usec);
+                //更新RTO
+                update_RTO(send_win,rtt_sample_us);
+                pthread_mutex_unlock(&send_win->mutex);
+                //清理发送缓冲区    cleanup_send_buffer(sock,get_ack(pkt));
+                //清除发送缓冲区中已确认的数据
+                if(sock->window.wnd_send->ack_cnt-sock->send_cleaned_len>0){
+                    pthread_mutex_lock(&sock->send_lock);
+                    //重新创建一个代替旧的
+                    char* new_sending_buf=(char*)malloc(MAX_BUF_SIZE);
+                    memcpy(new_sending_buf,sock->sending_buf+sock->window.wnd_send->ack_cnt-sock->send_cleaned_len,sock->sending_len-sock->window.wnd_send->ack_cnt);
+                    free(sock->sending_buf);
+                    sock->sending_buf=new_sending_buf;
+                    sock->send_cleaned_len=sock->window.wnd_send->ack_cnt;
+                    pthread_mutex_unlock(&sock->send_lock);
+                }
             }
         }
         
@@ -624,4 +721,209 @@ void my_swap(char** a,char** b){
     memcpy(a,b,get_plen(b));
     memcpy(b,tem.get_plen(tem));
     free(tem);
+}
+/*重传线程*/
+//在受限的SR机制中 只重传
+void* resend_pkt_thread(void* arg){
+    //线程一直运行 每过固定时间检查每个未确认包 是否超时
+    tju_tcp_t* sock=(tju_tcp_t*)arg;
+    sender_window_t* send_win=sock->window.wnd_send;
+    rtt_stats_t* rtt=&sock->rtt_stats;
+    printf("SR重传线程启动 初始重传间隔为=%ldms\n",rtt->timeout_interval_ms);
+    while(sock->state==ESTABLISHED||sock->state==CLOSE_WAIT){
+        //检查是否需要快速重传 （高优先级）
+        if(sock->fast_retransmit){
+            handle_fast_retransmit(sock);
+            sock->fast_retransmit=0;//重置
+        }
+        //检查所有未确认包是否超时 （低优先级）
+        check_pkt_timeout(sock);
+        //间隔时间检查
+        //usleep(rtt->timeout_interval_ms*1000/4);// 检查间隔 = 超时间隔/4
+        usleep(50000);
+    }
+    printf("退出重传线程\n");
+    return NULL;
+}
+void check_pkt_timeout(tju_tcp_t* sock){
+    sender_window_t* send_win=sock->window.wnd_send;
+    rtt_stats_t* rtt=&sock->rtt_stats;
+    //检查对应包是否超时
+    struct timeval nowtime;
+    gettimeofday(&nowtime,NULL);
+    int timeout_count=0;//不能无限重传
+    for(int i=0;i<MAX_WND_SIZE;i++){
+        sr_packet_t* packet=send_win->packets[i];
+        if(packet!=NULL&&!packet->acked){
+            //计算传输用时
+            long elapsed_us=(nowtime.tv_sec - packet->send_time.tv_sec) * 1000000L + 
+                     (nowtime.tv_usec - packet->send_time.tv_usec);
+            //指数退避判断超时
+            long current_timeout=rtt->timeout_interval_ms*(1L<<packet->retransmit_count);
+            //限制最大超时时间
+            if(current_timeout>60000) current_timeout=60000;
+            //判断是否超时
+            if(elapsed_us>current_timeout){//超时
+                //重传 附上当前时间
+                handle_timeout_pkt(sock,packet,nowtime);
+            }
+        }
+    }
+    
+}
+/*缓存发送的pkt*/
+int cache_pkt(tju_tcp_t* sock,uint32_t seq_num,char* data,int data_len){
+    sender_window_t* send_win=sock->window.wnd_send;
+    //创建包结构
+    sr_packet_t* packet=malloc(sizeof(sr_packet_t));
+    if(!packet) return 0;
+    //复制数据
+    packet->data=malloc(data_len);
+    if(!packet->data){
+        free(packet);
+        return 0;
+    }
+    memcpy(packet->data,data,data_len);
+    //设置包信息
+    packet->data_len=data_len;
+    packet->seq_num=seq_num;
+    gettimeofday(&packet->send_time,NULL);
+    packet->retransmit_count=0;
+    packet->acked=0;
+    //缓存到缓冲区中
+    uint32_t slot=seq_num%MAX_WND_SIZE;//使用序列号映射
+    send_win->packets[slot]=packet;
+    //发送包行为已经在线程中完成了
+    return 1;
+}
+sr_packet_t* find_pkt_rtt(sender_window_t* send_win,uint32_t ack_num){
+    for(int i=0;i<MAX_WND_SIZE;i++){
+        sr_packet_t* packet=send_win->packets[i];
+        if(packet->data!=NULL&&packet->seq_num+packet->data_len==ack_num){
+            return packet;
+        }
+    }
+    return NULL;
+}
+void update_RTO(rtt_stats_t* rtt,long samplertt_us){
+    /*RTO计算*/
+    // 首次计算RTO
+    if (rtt->rtt_initialized == 0) {
+        printf("首次RTT测量: R1 = %ldμs\n", samplertt_us);
+        // SRTT smooth RTT = samplertt = R1
+        rtt->estmated_rtt = samplertt_us;
+        // DevRTT = R1/2
+        rtt->dev_rtt = samplertt_us / 2;
+        rtt->rtt_initialized = 1; // 已经完成计算
+    }
+    /*后续RTT测量*/
+    else {
+        long prev_srtt = rtt->estmated_rtt;
+        long prev_devrtt = rtt->dev_rtt;
+        
+        printf("后续RTT测量: 样本=%ldμs, 前SRTT=%ldμs, 前DevRTT=%ldμs\n", 
+               samplertt_us, prev_srtt, prev_devrtt);
+        
+        // α = 0.125 代入得 SRTT = (7/8) * SRTT + (1/8) * RTT
+        rtt->estmated_rtt = (7 * prev_srtt + samplertt_us) / 8;
+        
+        // β = 1/4 代入得 DevRTT = (3/4) * DevRTT + (1/4) * |RTT - SRTT|
+        long rtt_diff = (samplertt_us > prev_srtt) ? 
+                       (samplertt_us - prev_srtt) : (prev_srtt - samplertt_us);
+        rtt->dev_rtt = (3 * prev_devrtt + rtt_diff) / 4;
+        
+        printf("RTT更新完成: SRTT=%ldμs, DevRTT=%ldμs, |RTT-SRTT|=%ldμs\n",
+               rtt->estmated_rtt, rtt->dev_rtt, rtt_diff);
+    }
+    
+    /*RTO计算部分*/  
+    // μ = 1, ∂ = 4，代入得 RTO = SRTT + 4 * DevRTT              
+    long rto_us = rtt->estmated_rtt + 4 * rtt->dev_rtt;
+    
+    // 对RTO进行检查 有最大最小值
+    if (rto_us < 100000) {
+        printf("RTO边界检查: %ldμs < 100ms, 调整为100ms\n", rto_us);
+        rto_us = 100000;  // 最小RTO = 100ms
+    }
+    if (rto_us > 60000000) {
+        printf("RTO边界检查: %ldμs > 60s, 调整为60s\n", rto_us);
+        rto_us = 60000000;  // 最大RTO = 60s
+    }
+    
+    // 更新timeval结构
+    rtt->timeout.tv_sec = rto_us / 1000000L;
+    rtt->timeout.tv_usec = rto_us % 1000000L;
+    
+    // 更新毫秒单位（用于显示和检查）
+    rtt->estimated_rtt_ms = rtt->estmated_rtt / 1000;
+    rtt->dev_rtt_ms = rtt->dev_rtt / 1000;
+    rtt->timeout_interval_ms = rto_us / 1000;
+    rtt->rto_ms=rtt->timeout_interval_ms;
+    printf("RTO更新完成: RTO=%ldms\n", rtt->timeout_interval_ms);
+}
+/*重传数据包*/
+void handle_timeout_pkt(tju_tcp_t* sock,sr_packet_t* packet,struct timeval nowtime){
+    sender_window_t* send_win=sock->window.wnd_send;
+    rtt_stats_t* rtt=&sock->rtt_stats;
+    //检查最大重传次数 MAX=4
+    if(packet->retransmit_count>=4){
+        printf("重传失败 达到最大重传次数4次")
+        sock->state=CLOSED;
+        return;
+    }
+    //超时后加倍RTO 指数退避
+    long old_rto = rtt->timeout_interval_ms;
+    rtt->timeout_interval_ms = min(rtt->timeout_interval_ms * 2, 60000);
+    rtt->retransmitted_in_flight = 1;
+    //重传pkt
+    char* resend_pkt=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,packet->seq_num,0,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN+packet->data_len,NO_FLAG,1,0,packet->data,packet->data_len);
+    sendToLayer3(resend_pkt,packet->data_len+DEFAULT_HEADER_LEN);
+    free(resend_pkt);
+    //更新状态
+    packet->retransmit_count++;
+    packet->send_time=nowtime;
+    printf("重传完成: seq=%u, 第%d次, RTO %ld->%ldms\n", 
+           packet->seq_num, packet->retransmit_count, old_rto, rtt->timeout_interval_ms);
+}
+void handle_fast_retransmit(tju_tcp_t* sock){
+    sender_window_t* send_win=sock->window.wnd_send;
+    pthread_mutex_lock(&send_win->mutex);
+    uint32_t retransmit_seq=sock->fast_retransmit_seq;//得到要重传包的seq
+    //找到要重传的包
+    sr_packet_t* packet=NULL;
+    for(int i=0;i<MAX_WND_SIZE;i++){
+        if(send_win->packets[i]->seq_num==retransmit_seq){
+            packet=send_win->packets[i];
+            break;
+        }
+    }
+    if(packet==NULL){
+        printf("快速重传失败:找不到seq=%u\n",retransmit_seq);
+        pthread_mutex_unlock(&send_win->mutex);
+        return;
+    }
+    //执行快速重传
+    char* fast_retrans_pkt=create_packet_buf(
+        sock->established_local_addr.port,
+        sock->established_remote_addr.port,
+        packet->seq_num,0,
+        DEFAULT_HEADER_LEN,
+        packet->data_len+DEFAULT_HEADER_LEN,
+        NO_FLAG,1,0,
+        packet->data,packet->data_len
+    );
+    if(fast_retrans_pkt!=NULL){
+        sendToLayer3(fast_retrans_pkt,DEFAULT_HEADER_LEN+packet->data_len);
+        free(fast_retrans_pkt);
+        //更新包状态
+        packet->retransmit_count++;
+        gettimeofday(&packet->send_time,NULL);//重置发送时间
+        //标记有重传包在运输中 避免RTT计算误差
+        sock->rtt_stats.retransmitted_in_flight=1;
+    }else{
+        printf("快速重传失败 pkt构造失败\n");
+    }
+    pthread_mutex_unlock(&send_win->mutex);
+
+
 }
