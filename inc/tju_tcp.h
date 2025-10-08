@@ -64,6 +64,11 @@ void* resend_pkt_thread(void* arg);
 void check_pkt_timeout(tju_tcp_t* sock);
 void check_cached_pkt(tju_tcp_t* sock);
 void my_swap(char** a,char** b);
+int cache_pkt(tju_tcp_t* sock,uint32_t seq_num,char* data,int data_len);
+sr_packet_t* find_pkt_rtt(sender_window_t* send_win,uint32_t ack_num);
+void update_RTO(rtt_stats_t* rtt,long samplertt_us);
+void handle_timeout_pkt(tju_tcp_t* sock,sr_packet_t* packet,struct timeval nowtime);
+void handle_fast_retransmit(tju_tcp_t* sock);
 //void send_tcp_flags(tju_tcp_t* sock, uint8_t flags, uint32_t seq,uint32_t ack) ;                     
 #endif
 

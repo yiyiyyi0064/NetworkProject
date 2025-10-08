@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include <sys/select.h>
 #include <arpa/inet.h>
+#include <stdbool.h>
 /*MIN与MAX*/
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -78,7 +79,7 @@ typedef struct{
 typedef struct{
 	/*RTT统计数据*/
    	struct timeval send_time;
-   	struct itimeval timeout;
+   	struct timeval timeout;
 	//RTT状态统计
 	int rtt_initialized;
 	int retransmitted_in_flight;
@@ -103,11 +104,12 @@ typedef struct {
    	int ack_cnt;
    	pthread_mutex_t ack_cnt_lock;
 	// 重传统计
+	int retransmitted_in_flight;
     uint32_t total_retransmissions;
     uint32_t timeout_retransmissions;
     uint32_t fast_retransmissions;
 	struct timeval send_time;
-   	struct itimeval timeout;
+   	struct timeval timeout;
 	//SR实现
 	sr_packet_t* packets[MAX_WND_SIZE];
 	pthread_mutex_t mutex;//发送包的缓存锁
@@ -152,7 +154,7 @@ typedef struct {
 	pthread_mutex_t send_lock; // 发送数据锁
 	char* sending_buf; // 发送数据缓存区
 	int sending_len; // 发送数据缓存长度
-	int send_cleaned_len //已经发送且确认数据长度
+	int send_cleaned_len; //已经发送且确认数据长度
 
 	pthread_mutex_t recv_lock; // 接收数据锁
 	char* received_buf; // 接收数据缓存区

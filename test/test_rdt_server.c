@@ -24,7 +24,11 @@ int main(int argc, char **argv) {
     tju_listen(my_server);
 
     tju_tcp_t* new_conn = tju_accept(my_server);
-
+    printf("【TEST】accept返回的socket: %p\n", new_conn);
+    printf("【TEST】socket状态: %d\n", new_conn->state);
+    printf("【TEST】本地地址: %d, 远程地址: %d\n",
+           new_conn->established_local_addr.port,
+           new_conn->established_remote_addr.port);
     sleep_no_wake(8);
 
     for (int i=0; i<50; i++){
