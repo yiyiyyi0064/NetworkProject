@@ -113,9 +113,9 @@ typedef struct {
 	sr_packet_t* packets[MAX_WND_SIZE];
 	pthread_mutex_t mutex;//发送包的缓存锁
    	uint16_t rwnd;
-   	//int congestion_status;
-  	//uint16_t cwnd; 
-   	//uint16_t ssthresh; 
+   	int congestion_status;	//当前状态
+  	uint16_t cwnd; //拥塞窗口
+   	uint16_t ssthresh; //慢启动阈值
 } sender_window_t;
 
 // TCP 接受窗口

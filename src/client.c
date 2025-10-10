@@ -6,6 +6,9 @@ int main(int argc, char **argv) {
     // 开启仿真环境 
     startSimulation();
 
+    // 初始化日志文件（自动检测角色）
+    trace_init_log();
+
     tju_tcp_t* my_socket = tju_socket();//创建之后就会一直使用这个socket
     // printf("my_tcp state %d\n", my_socket->state);
     
@@ -38,6 +41,9 @@ int main(int argc, char **argv) {
 
     tju_recv(my_socket, (void*)buf, 10);
     printf("client recv %s\n", buf);
+    
+    // 关闭日志文件
+    close_log_file();
     
     return EXIT_SUCCESS;
 }

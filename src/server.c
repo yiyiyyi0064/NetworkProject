@@ -5,6 +5,9 @@ int main(int argc, char **argv) {
     // 开启仿真环境 
     startSimulation();
 
+    // 初始化日志文件（自动检测角色）
+    trace_init_log();
+
     tju_tcp_t* my_server = tju_socket();
     // printf("my_tcp state %d\n", my_server->state);
     
@@ -44,6 +47,8 @@ int main(int argc, char **argv) {
     tju_recv(new_conn, (void*)buf, 10);
     printf("server recv %s\n", buf);
 
+    // 关闭日志文件
+    close_log_file();
 
     return EXIT_SUCCESS;
 }
