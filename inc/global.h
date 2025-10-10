@@ -94,7 +94,6 @@ typedef struct{
 
 }rtt_stats_t;
 // TCP 发送窗口
-// 注释的内容如果想用就可以用 不想用就删掉 仅仅提供思路和灵感
 typedef struct {
 	uint16_t window_size;
     uint32_t base;
@@ -114,9 +113,9 @@ typedef struct {
 	sr_packet_t* packets[MAX_WND_SIZE];
 	pthread_mutex_t mutex;//发送包的缓存锁
    	uint16_t rwnd;
-   	int congestion_status;
-  	uint16_t cwnd; 
-   	uint16_t ssthresh; 
+   	//int congestion_status;
+  	//uint16_t cwnd; 
+   	//uint16_t ssthresh; 
 } sender_window_t;
 
 // TCP 接受窗口

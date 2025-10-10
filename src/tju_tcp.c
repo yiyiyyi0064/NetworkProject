@@ -24,6 +24,9 @@ tju_tcp_t* tju_socket(){
     pthread_mutex_init(&send_win->mutex, NULL);
     /*初始化接收窗口*/
     sock->window.wnd_recv=malloc(sizeof(receiver_window_t));
+    receiver_window_t* recv_win=sock->window.wnd_recv;
+    recv_win->expect_seq=0;//期望接收的序列号从0开始
+    recv_win->avail_wnd_size=TCP_RECVWN_SIZE;//可用窗口大小
     /*初始化pkt缓存数组*/
     sock->unolen=0;//只要置0即可
     
@@ -86,22 +89,23 @@ int tju_listen(tju_tcp_t* sock){
 tju_tcp_t* tju_accept(tju_tcp_t* listen_sock){
     int flag=0;
     tju_tcp_t* new_conn=NULL;
-    //阻塞等待，才全连接队列中返回一个可用socket
-    printf("服务端:与服务器建立连接\n");
+    //阻塞等待，从全连接队列中返回一个可用socket
+    //printf("服务端:等待客户端连接\n");
     while(!flag){
         for(int i=0;i<MAX_SOCK;i++){
             if(acceptqueue[i]!=NULL&&acceptqueue[i]->state==ESTABLISHED){
                 new_conn=acceptqueue[i];
-                printf("成功找到\n");
+                //printf("成功找到已建立连接的socket，索引=%d\n", i);
                 acceptqueue[i]=NULL;//从列表中移除
                 flag=1;
                 break;
             }
         }
         if(!flag){
-            usleep(10);//休眠避免忙等待
+            usleep(10000);//休眠10ms避免忙等待
         }
     }
+    //printf("accept返回socket: %p, 状态: %d\n", new_conn, new_conn->state);
     return new_conn;
 }
 
@@ -176,8 +180,10 @@ int tju_send(tju_tcp_t* sock, const void *buffer, int len){
         pthread_mutex_lock(&sock->send_lock);//休眠后 再上锁再次检查
     }
     //正常 将data复制到发送缓冲区
+    printf("【tju_send】复制数据前: sending_len=%d, len=%d, 总长度=%d\n", sock->sending_len, len, sock->sending_len+len);
     memcpy(sock->sending_buf+sock->sending_len,(char*)buffer,len);//从上次发送结束位置开始保存这次的数据
     sock->sending_len+=len;
+    printf("【tju_send】复制数据后: sending_len=%d\n", sock->sending_len);
     //printf("【tju_send】复制数据到缓冲区 - 目标位置偏移=%d, 当前sending_len=%d\n", 
     //       sock->sending_len, sock->sending_len);
     pthread_mutex_unlock(&sock->send_lock);
@@ -209,18 +215,21 @@ void* send_pkt_thread(void* arg){
             //计算可发送数据长度
             uint32_t available_wnd=sock->window.wnd_send->window_size-sock->window.wnd_send->nextseq+sock->window.wnd_send->base;
             //uint32_t remaining_data=sock->sending_len-(sock->window.wnd_send->nextseq-1);
-            uint32_t remaining_data=sock->sending_len-sock->window.wnd_send->nextseq+sock->send_cleaned_len;
+            uint32_t remaining_data=sock->sending_len-(sock->window.wnd_send->nextseq-sock->window.wnd_send->base);
+            //sock->window.wnd_send->nextseq-sock->window.wnd_send->base 是已经发送但未确认的部分 也就是还要发送的部分 
+            //已经发送并确认的会通过cleaned_len在sending_len中去除
             //可发送数据量 min[剩余未发送数据量,available_wnd] base、nextseq再接收到ack后更新过 这是新的一次发送
             uint32_t data_send_len=MIN(available_wnd,remaining_data);
             //提取要发送的数据 注意这里的计算要特别注意
             //char* data=sock->sending_buf+sock->window.wnd_send->nextseq-sock->send_cleaned_len-1;
-            char* data=sock->sending_buf+sock->window.wnd_send->nextseq-sock->send_cleaned_len;
+            char* data=sock->sending_buf+sock->window.wnd_send->nextseq-sock->window.wnd_send->base;
+            //这个sending_buf每次都会重新malloc
             //添加调试日志
-            printf("DEBUG: sending_len=%d, nextseq=%d, base=%d, cleaned_len=%d\n",
-                    sock->sending_len,sock->window.wnd_send->nextseq,
-                    sock->window.wnd_send->base,sock->send_cleaned_len);
-            printf("DEBUG: available_wnd=%d, total_unsent_data=%d, data_send_len=%d\n", 
-               available_wnd, remaining_data, data_send_len);
+             printf("DEBUG: sending_len=%d, nextseq=%d, base=%d, cleaned_len=%d\n",
+                     sock->sending_len,sock->window.wnd_send->nextseq,
+                     sock->window.wnd_send->base,sock->send_cleaned_len);
+             printf("DEBUG: available_wnd=%d, total_unsent_data=%d, data_send_len=%d\n", 
+                available_wnd, remaining_data, data_send_len);
             if(remaining_data==0){
                 pthread_mutex_unlock(&sock->send_lock);
                 usleep(10000);//等待10ms再检查
@@ -282,7 +291,8 @@ int tju_recv(tju_tcp_t* sock, void *buffer, int len){
     //printf("【tju_recv】开始接收数据，请求长度=%d\n", len);
 
     while(sock->received_len<=0){
-        // 阻塞
+        // 阻塞等待数据
+        usleep(1000); // 休眠1ms避免忙等待
     } 
 
     while(pthread_mutex_lock(&(sock->recv_lock)) != 0); // 加锁
@@ -309,7 +319,7 @@ int tju_recv(tju_tcp_t* sock, void *buffer, int len){
     }
     pthread_mutex_unlock(&(sock->recv_lock)); // 解锁
 
-    return 0;
+    return read_len;
 }
 
 int tju_handle_packet(tju_tcp_t* sock, char* pkt){
@@ -336,11 +346,12 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
             }
             //将该socket状态改为ESTABLISHED
             synsock->state=ESTABLISHED;
-            printf("建立连接！\n");
+            //printf("建立连接！服务器socket状态: %d\n", synsock->state);
             //移动到全连接表
             acceptqueue[hashval] = synsock;
             synqueue[hashval] = NULL;
             established_socks[hashval]=synsock;
+            //printf("socket已放入acceptqueue，hashval=%d\n", hashval);
         }
     }
     /*第三次握手 client*/
@@ -355,8 +366,9 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
     /*连接关闭 四次挥手*/
      /*第二次挥手*/
     else if(sock->state==ESTABLISHED){
+        printf("服务器处理数据包，当前状态: %d, flags: %d\n", sock->state, flags);
         if (flags==NO_FLAG){
-            printf("接收到pkt");
+            printf("接收到pkt,seq=%d\n",get_seq(pkt));
             //首先判断收到数据是否为expectseq
             if(get_seq(pkt)==sock->window.wnd_recv->expect_seq){
                 printf("收到数据 seq=%d\n",get_seq(pkt));
@@ -367,10 +379,14 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                 if(get_seq(pkt)+dlen<expt_seq+avail_wnd_size){
                     //正常放入
                     pthread_mutex_lock(&sock->recv_lock);
-                    uint32_t place=get_seq(pkt)-sock->recv_cleaned_len-1;
-                    //这里注意 要从数据位置开始复制
-                    memcpy(sock->received_buf+place,pkt+get_hlen(pkt),dlen);
-                    printf("在接收缓冲区place=%d放入大小为dlen=%d的数据\n",place,dlen);
+                    //初始化接收缓冲区
+                    if(sock->received_buf == NULL){
+                        sock->received_buf = malloc(MAX_BUF_SIZE);
+                        sock->received_len = 0;
+                    }
+                    //直接追加到接收缓冲区末尾
+                    memcpy(sock->received_buf + sock->received_len, pkt + get_hlen(pkt), dlen);
+                    printf("在接收缓冲区末尾放入大小为dlen=%d的数据\n",dlen);
                     //成功接收数据 buf以及窗口等数据更新
                     sock->window.wnd_recv->avail_wnd_size-=dlen;
                     sock->window.wnd_recv->expect_seq+=dlen;
@@ -380,14 +396,13 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                 }
                 //处理完之后还要检查是否有缓存pkt可以进行处理
                 check_cached_pkt(sock);
-                /*
-                uint32_t seq=sock->window.wnd_send->nextseq;//为什么这里等于这个值
+                //发送ACK确认
+                uint32_t seq=sock->window.wnd_send->nextseq;
                 uint32_t ack=sock->window.wnd_recv->expect_seq;
-                uint32_t adv_wnd=sock->window.wnd_recv->avail_wnd_size;//流量控制相关 返回当前接收窗口可以大小
-                //发送ACK
+                uint32_t adv_wnd=sock->window.wnd_recv->avail_wnd_size;
                 char* ack_pkt=create_packet_buf(sock->established_local_addr.port,sock->established_remote_addr.port,seq,ack,DEFAULT_HEADER_LEN,DEFAULT_HEADER_LEN,ACK_FLAG_MASK,adv_wnd,0,NULL,0);
                 sendToLayer3(ack_pkt,DEFAULT_HEADER_LEN);
-                free(ack_pkt);*/
+                free(ack_pkt);
             }
             /*SR相关处理*/
             //收到seq乱序但仍在接收窗口内 不直接丢弃 而是缓存乱序pkt
@@ -435,7 +450,10 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
             else{
                 printf("收到有效ACK报文 ACK=%d\n",get_ack(pkt));
                 sock->window.wnd_send->base=get_ack(pkt);//直接将base设为当前ack
-                sock->window.wnd_send->ack_cnt=sock->window.wnd_send->base-1;//更新已经确认了的数据
+                sock->window.wnd_send->ack_cnt=sock->window.wnd_send->base;//更新已经确认了的数据
+                printf("【ACK处理】base=%d, ack_cnt=%d, cleaned_len=%d, 差值=%d\n", 
+                       sock->window.wnd_send->base, sock->window.wnd_send->ack_cnt, 
+                       sock->send_cleaned_len, sock->window.wnd_send->ack_cnt-sock->send_cleaned_len);
                 sock->window.wnd_send->window_size=get_advertised_window(pkt);//流量控制 根据pkt反馈改变发送窗口大小
                 //这里累积确认之后 需要立即标记已经确认的包 小于当前ack的都是已经确认过的
                 pthread_mutex_lock(&send_win->mutex);
@@ -445,6 +463,7 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                     if(packet!=NULL&&!packet->acked&&(packet->seq_num<get_ack(pkt))){
                         //printf("确认并清理包：seq=%d\n",packet->seq_num);
                         packet->acked=TRUE;
+                        printf("确认seq=%d\n",packet->seq_num);
                         packets_acked++;
                         //立即释放内存
                         if(packet->data!=NULL){
@@ -456,38 +475,45 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
                         packets_freed++;
                     }
                 }
-                //结束计时 更新RTT与RTO
-                //确定用于RTT计算的pkt 即序列号正好被ack确认的pkt
-                sr_packet_t* find_pkt=find_pkt_rtt(send_win,get_ack(pkt));
-                if(find_pkt==NULL){
-                    pthread_mutex_unlock(&send_win->mutex);
-                    return 0;
-                }
-                //跳过重传包的RTT计算
-                if(find_pkt->retransmit_count>0||rtt->retransmitted_in_flight){
-                    rtt->retransmitted_in_flight=0;
-                    pthread_mutex_unlock(&send_win->mutex);
-                    return 0;
-                }
-                //计算Sample_RTT
-                struct timeval nowtime;
-                gettimeofday(&nowtime,NULL);
-                long rtt_sample_us=(nowtime.tv_sec - find_pkt->send_time.tv_sec) * 1000000L + 
-                        (nowtime.tv_usec - find_pkt->send_time.tv_usec);
-                //更新RTO
-                update_RTO(&sock->rtt_stats,rtt_sample_us);
                 pthread_mutex_unlock(&send_win->mutex);
-                //清理发送缓冲区    cleanup_send_buffer(sock,get_ack(pkt));
-                //清除发送缓冲区中已确认的数据
+                
+                //清理发送缓冲区 - 移到RTT计算之前，确保总是执行
+                printf("【清理检查】ack_cnt=%d, cleaned_len=%d, 差值=%d\n", 
+                       sock->window.wnd_send->ack_cnt, sock->send_cleaned_len, 
+                       sock->window.wnd_send->ack_cnt-sock->send_cleaned_len);
                 if(sock->window.wnd_send->ack_cnt-sock->send_cleaned_len>0){
                     pthread_mutex_lock(&sock->send_lock);
+                    printf("【清理缓冲区】清理前: sending_len=%d, ack_cnt=%d, cleaned_len=%d\n", 
+                           sock->sending_len, sock->window.wnd_send->ack_cnt, sock->send_cleaned_len);
                     //重新创建一个代替旧的
                     char* new_sending_buf=(char*)malloc(MAX_BUF_SIZE);
-                    memcpy(new_sending_buf,sock->sending_buf+sock->window.wnd_send->ack_cnt-sock->send_cleaned_len,sock->sending_len-sock->window.wnd_send->ack_cnt);
+                    uint32_t remaining_data_len = sock->sending_len - (sock->window.wnd_send->ack_cnt - sock->send_cleaned_len);
+                    printf("【清理缓冲区】剩余数据长度: %d\n", remaining_data_len);
+                    if(remaining_data_len > 0){
+                        memcpy(new_sending_buf, sock->sending_buf + sock->window.wnd_send->ack_cnt - sock->send_cleaned_len, remaining_data_len);
+                    }
                     free(sock->sending_buf);
                     sock->sending_buf=new_sending_buf;
+                    sock->sending_len=remaining_data_len;
                     sock->send_cleaned_len=sock->window.wnd_send->ack_cnt;
+                    printf("【清理缓冲区】清理后: sending_len=%d, cleaned_len=%d\n", sock->sending_len, sock->send_cleaned_len);
                     pthread_mutex_unlock(&sock->send_lock);
+                }
+                
+                //RTT计算 - 移到清理之后
+                sr_packet_t* find_pkt=find_pkt_rtt(send_win,get_ack(pkt));
+                if(find_pkt!=NULL){
+                    //跳过重传包的RTT计算
+                    if(find_pkt->retransmit_count==0&&!rtt->retransmitted_in_flight){
+                        //计算Sample_RTT
+                        struct timeval nowtime;
+                        gettimeofday(&nowtime,NULL);
+                        long rtt_sample_us=(nowtime.tv_sec - find_pkt->send_time.tv_sec) * 1000000L + 
+                                (nowtime.tv_usec - find_pkt->send_time.tv_usec);
+                        //更新RTO
+                        update_RTO(&sock->rtt_stats,rtt_sample_us);
+                    }
+                    rtt->retransmitted_in_flight=0;
                 }
             }
         }
@@ -567,19 +593,6 @@ int tju_handle_packet(tju_tcp_t* sock, char* pkt){
             timer_2msl(sock);
         }
     }
-    // 把收到的数据放到接受缓冲区
-    uint32_t data_len = get_plen(pkt) - DEFAULT_HEADER_LEN;
-    while(pthread_mutex_lock(&(sock->recv_lock)) != 0); // 加锁
-
-    if(sock->received_buf == NULL){
-        sock->received_buf = malloc(data_len);
-    }else {
-        sock->received_buf = realloc(sock->received_buf, sock->received_len + data_len);
-    }
-    memcpy(sock->received_buf + sock->received_len, pkt + DEFAULT_HEADER_LEN, data_len);
-    sock->received_len += data_len;
-
-    pthread_mutex_unlock(&(sock->recv_lock)); // 解锁
     return 0;
 }
 
@@ -624,8 +637,8 @@ void handle_syn(tju_tcp_t* listen_socks,char* pkt){
         synsock->established_remote_addr.ip,
         synsock->established_remote_addr.port
     );
-    established_socks[hashval]=synsock;//加入ehash列表
     synqueue[hashval]=synsock;
+    //printf("handle_syn: socket放入synqueue，hashval=%d，状态=%d\n", hashval, synsock->state);
     uint32_t seq=0;
     uint32_t ack=get_seq(pkt)+1;//ack=x+1 seq=y 随机设置为0
     char* syn_ack_flags=create_packet_buf(get_dst(pkt),get_src(pkt),seq,ack,DEFAULT_HEADER_LEN, DEFAULT_HEADER_LEN, (SYN_FLAG_MASK|ACK_FLAG_MASK), 1, 0, NULL, 0);
@@ -733,10 +746,14 @@ void check_cached_pkt(tju_tcp_t* sock){
                 if(get_seq(pkt)+dlen<expt_seq+avail_wnd_size){
                     //正常放入
                     pthread_mutex_lock(&sock->recv_lock);
-                    uint32_t place=get_seq(pkt)-sock->recv_cleaned_len-1;
-                    //这里注意 要从数据位置开始复制
-                    memcpy(sock->received_buf+place,pkt+get_hlen(pkt),dlen);
-                    printf("在接收缓冲区place=%d放入大小为dlen=%d的数据\n",place,dlen);
+                    //初始化接收缓冲区
+                    if(sock->received_buf == NULL){
+                        sock->received_buf = malloc(MAX_BUF_SIZE);
+                        sock->received_len = 0;
+                    }
+                    //直接追加到接收缓冲区末尾 这里recv_len还没有更新 pkt+get_hlen(pkt) 就是直接从数据位置开始
+                    memcpy(sock->received_buf + sock->received_len, pkt + get_hlen(pkt), dlen);
+                    printf("在接收缓冲区末尾放入大小为dlen=%d的数据\n",dlen);
                     //成功接收数据 buf以及窗口等数据更新
                     sock->window.wnd_recv->avail_wnd_size-=dlen;
                     sock->window.wnd_recv->expect_seq+=dlen;
@@ -762,11 +779,9 @@ void check_cached_pkt(tju_tcp_t* sock){
     }
 }
 void my_swap(char** a,char** b){
-    char* tem=(char*)malloc(MAX_LEN);
-    memcpy(tem,a,get_plen(b));
-    memcpy(a,b,get_plen(b));
-    memcpy(b,tem,get_plen(tem));
-    free(tem);
+    char* tem=*a;
+    *a=*b;
+    *b=tem;
 }
 /*重传线程*/
 //在受限的SR机制中 只重传
@@ -845,7 +860,8 @@ int cache_pkt(tju_tcp_t* sock,uint32_t seq_num,char* data,int data_len){
 sr_packet_t* find_pkt_rtt(sender_window_t* send_win,uint32_t ack_num){
     for(int i=0;i<MAX_WND_SIZE;i++){
         sr_packet_t* packet=send_win->packets[i];
-        if(packet->data!=NULL&&packet->seq_num+packet->data_len==ack_num){
+        if(packet!=NULL&&packet->data!=NULL&&packet->seq_num+packet->data_len==ack_num){
+            //修复packet可能为空指针的问题
             return packet;
         }
     }
@@ -938,7 +954,7 @@ void handle_fast_retransmit(tju_tcp_t* sock){
     //找到要重传的包
     sr_packet_t* packet=NULL;
     for(int i=0;i<MAX_WND_SIZE;i++){
-        if(send_win->packets[i]->seq_num==retransmit_seq){
+        if(send_win->packets[i]!=NULL&&send_win->packets[i]->seq_num==retransmit_seq){
             packet=send_win->packets[i];
             break;
         }
