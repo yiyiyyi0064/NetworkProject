@@ -16,12 +16,13 @@
 #include <sys/select.h>
 #include <arpa/inet.h>
 #include <stdbool.h>
+#define MSS 1375
 /*MIN与MAX*/
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 /*缓冲区设置*/
 #define MAX_PKT_IN_WND 100
-#define MAX_BUF_SIZE 14000
+#define MAX_BUF_SIZE 140000//可以存放100个缓存pkt
 /*初始化序列号*/
 #define ISN 0
 //定义server与client 地址
@@ -114,7 +115,7 @@ typedef struct {
 	pthread_mutex_t mutex;//发送包的缓存锁
    	uint16_t rwnd;
    	int congestion_status;	//当前状态
-  	uint16_t cwnd; //拥塞窗口
+   	uint32_t cwnd; //拥塞窗口
    	uint16_t ssthresh; //慢启动阈值
 } sender_window_t;
 
@@ -122,7 +123,6 @@ typedef struct {
 // 注释的内容如果想用就可以用 不想用就删掉 仅仅提供思路和灵感
 typedef struct {
 	char received[TCP_RECVWN_SIZE];
-
 //   received_packet_t* head;
    	char buf[TCP_RECVWN_SIZE];
    	uint8_t marked[TCP_RECVWN_SIZE];//用于缓存

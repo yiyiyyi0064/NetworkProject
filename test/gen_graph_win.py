@@ -144,7 +144,7 @@ print("正在使用 %s Trace文件绘图"%FILE_TO_READ)
 SEND_dic, RECV_dic, CWND_dic, RWND_dic, SWND_dic, RTTS_dic, DELV_dic = read_trace(FILE_TO_READ)
 
 # 绘图时是否需要间隔 间隔的大小 绘制的数据区间 需要大家根据自己的数据以及绘图效果自行调整, 可参考
-intv = 100
+intv = 1
 if len(CWND_dic['utctime']):
     plot_win(CWND_dic['time'], np.array(CWND_dic['size']), 'Congestion', CWND_dic['type']) # 用全部数据绘图
     # plot_win(CWND_dic['time'][::intv], np.array(CWND_dic['size'][::intv]), 'Congestion', CWND_dic['type'][::intv]) # 间隔100个数据进行绘制
@@ -164,7 +164,7 @@ if len(RTTS_dic['utctime']):
 
 # 每间隔1s绘制一次吞吐率
 if len(DELV_dic['utctime']): 
-    thrp_intv = 1 # throughput interval
+    thrp_intv = 0.01 # throughput interval
     time_start = DELV_dic['time'][0]
     intvs = int(DELV_dic['time'][-1])
     thrp_list = []

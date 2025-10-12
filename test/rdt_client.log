@@ -1,0 +1,1102 @@
+【tju_socket】开始创建socket
+【tju_socket】socket创建完成: state=0
+【tju_socket】分配发送窗口内存
+【拥塞控制初始化】创建socket: 状态=SLOW_START, cwnd=1375, ssthresh=65535
+【tju_connect】开始连接: target_ip=2886795267, target_port=1234
+【tju_connect】发送SYN: state=2
+【tju_connect】连接建立成功: state=4
+【tju_send】复制数据前: sending_len=0, len=10000, 总长度=10000
+【tju_send】复制数据后: sending_len=10000
+【tju_send】创建发送线程
+【tju_send】创建重传线程
+【tju_send】复制数据前: sending_len=10000, len=10000, 总长度=20000
+【tju_send】复制数据后: sending_len=20000
+【tju_send】复制数据前: sending_len=20000, len=10000, 总长度=30000
+【发送线程】发送线程启动
+【发送线程】准备发送: sending_len=20000, unacked=0, window_size=1375, cwnd=1375
+【tju_send】复制数据后: sending_len=30000
+【tju_send】复制数据前: sending_len=30000, len=10000, 总长度=40000
+【tju_send】复制数据后: sending_len=40000
+【tju_send】复制数据前: sending_len=40000, len=10000, 总长度=50000
+【tju_send】复制数据后: sending_len=50000
+【tju_send】复制数据前: sending_len=50000, len=10000, 总长度=60000
+【tju_send】复制数据后: sending_len=60000
+【tju_send】复制数据前: sending_len=60000, len=10000, 总长度=70000
+【tju_send】复制数据后: sending_len=70000
+【tju_send】复制数据前: sending_len=70000, len=10000, 总长度=80000
+【tju_send】复制数据后: sending_len=80000
+【tju_send】复制数据前: sending_len=80000, len=10000, 总长度=90000
+【tju_send】复制数据后: sending_len=90000
+【tju_send】复制数据前: sending_len=90000, len=10000, 总长度=100000
+【tju_send】复制数据后: sending_len=100000
+【tju_send】复制数据前: sending_len=100000, len=10000, 总长度=110000
+【tju_send】复制数据后: sending_len=110000
+【tju_send】复制数据前: sending_len=110000, len=10000, 总长度=120000
+【tju_send】复制数据后: sending_len=120000
+【tju_send】复制数据前: sending_len=120000, len=10000, 总长度=130000
+【tju_send】复制数据后: sending_len=130000
+【tju_send】复制数据前: sending_len=130000, len=10000, 总长度=140000
+【tju_send】复制数据后: sending_len=140000
+【发送线程】计算发送量: available_wnd=1375, remaining_data=140000, data_send_len=1375
+DEBUG: sending_len=140000, nextseq=0, base=0, cleaned_len=0
+DEBUG: available_wnd=1375, total_unsent_data=140000, data_send_len=1375
+【发送线程】发送成功: seq=0, dlen=1375, nextseq更新为1375
+【发送线程】等待条件: sending_len=140000, unacked=1375, window_size=1375
+【发送线程】等待条件: sending_len=140000, unacked=1375, window_size=1375
+【发送线程】等待条件: sending_len=140000, unacked=1375, window_size=1375
+【慢启动】收到ACK: cwnd 1375 -> 2750 (+1375)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=2750, window_size 1375 -> 2750
+【发送线程】准备发送: sending_len=138625, unacked=0, window_size=2750, cwnd=2750
+【发送线程】计算发送量: available_wnd=2750, remaining_data=138625, data_send_len=2750
+DEBUG: sending_len=138625, nextseq=1375, base=1375, cleaned_len=1375
+DEBUG: available_wnd=2750, total_unsent_data=138625, data_send_len=2750
+【发送线程】分包发送: seq=1375, dlen=1375, nextseq更新为2750
+【发送线程】分包发送: seq=2750, dlen=1375, nextseq更新为4125
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【超时重传】开始处理超时重传: seq=2750, retransmit_count=0
+【超时重传】RTO更新: 100ms -> 200ms (指数退避)
+【超时重传】拥塞控制: ssthresh 65535 -> 1375, cwnd 2750 -> 1375, 状态 0 -> 0
+【超时重传】开始处理超时重传: seq=1375, retransmit_count=0
+【超时重传】RTO更新: 200ms -> 400ms (指数退避)
+【超时重传】拥塞控制: ssthresh 1375 -> 687, cwnd 1375 -> 1375, 状态 0 -> 0
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=138625, unacked=2750, window_size=2750
+【慢启动】收到ACK: cwnd 1375 -> 2750 (+1375)
+【状态转换】慢启动->拥塞避免: cwnd=2750 >= ssthresh=687
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=2750, window_size 2750 -> 2750
+【发送线程】准备发送: sending_len=135875, unacked=0, window_size=2750, cwnd=2750
+【发送线程】计算发送量: available_wnd=2750, remaining_data=135875, data_send_len=2750
+DEBUG: sending_len=135875, nextseq=4125, base=4125, cleaned_len=4125
+DEBUG: available_wnd=2750, total_unsent_data=135875, data_send_len=2750
+【发送线程】分包发送: seq=4125, dlen=1375, nextseq更新为5500
+【发送线程】分包发送: seq=5500, dlen=1375, nextseq更新为6875
+【发送线程】等待条件: sending_len=135875, unacked=2750, window_size=2750
+【发送线程】等待条件: sending_len=135875, unacked=2750, window_size=2750
+【拥塞避免】收到ACK: cwnd 2750 -> 3437 (+687)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=3437, window_size 2750 -> 3437
+【拥塞避免】收到ACK: cwnd 3437 -> 3987 (+550)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=3987, window_size 3437 -> 3987
+【发送线程】准备发送: sending_len=133125, unacked=0, window_size=3987, cwnd=3987
+【发送线程】计算发送量: available_wnd=3987, remaining_data=133125, data_send_len=3987
+DEBUG: sending_len=133125, nextseq=6875, base=6875, cleaned_len=6875
+DEBUG: available_wnd=3987, total_unsent_data=133125, data_send_len=3987
+【发送线程】分包发送: seq=6875, dlen=1375, nextseq更新为8250
+【发送线程】分包发送: seq=8250, dlen=1375, nextseq更新为9625
+【发送线程】分包发送: seq=9625, dlen=1237, nextseq更新为10862
+【发送线程】等待条件: sending_len=133125, unacked=3987, window_size=3987
+【发送线程】等待条件: sending_len=133125, unacked=3987, window_size=3987
+【拥塞避免】收到ACK: cwnd 3987 -> 4461 (+474)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=4461, window_size 3987 -> 4461
+【拥塞避免】收到ACK: cwnd 4461 -> 4884 (+423)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=4884, window_size 4461 -> 4884
+【拥塞避免】收到ACK: cwnd 4884 -> 5271 (+387)
+【窗口更新】收到ACK: advertised_wnd=40013, cwnd=5271, window_size 4884 -> 5271
+【tju_send】复制数据前: sending_len=129138, len=10000, 总长度=139138
+【tju_send】复制数据后: sending_len=139138
+【发送线程】准备发送: sending_len=139138, unacked=0, window_size=5271, cwnd=5271
+【发送线程】计算发送量: available_wnd=5271, remaining_data=139138, data_send_len=5271
+DEBUG: sending_len=139138, nextseq=10862, base=10862, cleaned_len=10862
+DEBUG: available_wnd=5271, total_unsent_data=139138, data_send_len=5271
+【发送线程】分包发送: seq=10862, dlen=1375, nextseq更新为12237
+【发送线程】分包发送: seq=12237, dlen=1375, nextseq更新为13612
+【发送线程】分包发送: seq=13612, dlen=1375, nextseq更新为14987
+【发送线程】分包发送: seq=14987, dlen=1146, nextseq更新为16133
+【发送线程】等待条件: sending_len=139138, unacked=5271, window_size=5271
+【发送线程】等待条件: sending_len=139138, unacked=5271, window_size=5271
+【发送线程】等待条件: sending_len=139138, unacked=5271, window_size=5271
+【拥塞避免】收到ACK: cwnd 5271 -> 5629 (+358)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=5629, window_size 5271 -> 5629
+【发送线程】准备发送: sending_len=137763, unacked=3896, window_size=5629, cwnd=5629
+【发送线程】计算发送量: available_wnd=1733, remaining_data=133867, data_send_len=1733
+DEBUG: sending_len=137763, nextseq=16133, base=12237, cleaned_len=12237
+DEBUG: available_wnd=1733, total_unsent_data=133867, data_send_len=1733
+【发送线程】分包发送: seq=16133, dlen=1375, nextseq更新为17508
+【发送线程】分包发送: seq=17508, dlen=358, nextseq更新为17866
+【发送线程】等待条件: sending_len=137763, unacked=5629, window_size=5629
+【发送线程】等待条件: sending_len=137763, unacked=5629, window_size=5629
+【快速重传】触发快速重传: seq=12237, base=12237, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=12237
+【快速重传】查找包: retransmit_seq=12237
+【快速重传】检查包[5500]: seq=17508, acked=0
+【快速重传】检查包[6875]: seq=16133, acked=0
+【快速重传】检查包[15125]: seq=14987, acked=0
+【快速重传】检查包[16500]: seq=13612, acked=0
+【快速重传】检查包[17875]: seq=12237, acked=0
+【快速重传】找到要重传的包: seq=12237, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=12237, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=12237, 重传次数=1
+【快速重传】拥塞控制: ssthresh 687 -> 2814, cwnd 5629 -> 9754, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=9754, window_size 5629 -> 9754
+【发送线程】准备发送: sending_len=137763, unacked=5629, window_size=9754, cwnd=9754
+【发送线程】计算发送量: available_wnd=4125, remaining_data=132134, data_send_len=4125
+DEBUG: sending_len=137763, nextseq=17866, base=12237, cleaned_len=12237
+DEBUG: available_wnd=4125, total_unsent_data=132134, data_send_len=4125
+【发送线程】分包发送: seq=17866, dlen=1375, nextseq更新为19241
+【发送线程】分包发送: seq=19241, dlen=1375, nextseq更新为20616
+【发送线程】分包发送: seq=20616, dlen=1375, nextseq更新为21991
+【发送线程】等待条件: sending_len=137763, unacked=9754, window_size=9754
+【发送线程】等待条件: sending_len=137763, unacked=9754, window_size=9754
+【快速恢复->拥塞避免】收到新ACK: cwnd 9754 -> 2814, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=38371, cwnd=2814, window_size 9754 -> 2814
+【发送线程】等待条件: sending_len=132134, unacked=4125, window_size=2814
+【拥塞避免】收到ACK: cwnd 2814 -> 3485 (+671)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=3485, window_size 2814 -> 3485
+【拥塞避免】收到ACK: cwnd 3485 -> 4027 (+542)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=4027, window_size 3485 -> 4027
+【tju_send】复制数据前: sending_len=129384, len=10000, 总长度=139384
+【tju_send】复制数据后: sending_len=139384
+【发送线程】准备发送: sending_len=139384, unacked=1375, window_size=4027, cwnd=4027
+【发送线程】计算发送量: available_wnd=2652, remaining_data=138009, data_send_len=2652
+DEBUG: sending_len=139384, nextseq=21991, base=20616, cleaned_len=20616
+DEBUG: available_wnd=2652, total_unsent_data=138009, data_send_len=2652
+【发送线程】分包发送: seq=21991, dlen=1375, nextseq更新为23366
+【发送线程】分包发送: seq=23366, dlen=1277, nextseq更新为24643
+【发送线程】等待条件: sending_len=139384, unacked=4027, window_size=4027
+【发送线程】等待条件: sending_len=139384, unacked=4027, window_size=4027
+【发送线程】等待条件: sending_len=139384, unacked=4027, window_size=4027
+【拥塞避免】收到ACK: cwnd 4027 -> 4496 (+469)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=4496, window_size 4027 -> 4496
+【拥塞避免】收到ACK: cwnd 4496 -> 4916 (+420)
+【窗口更新】收到ACK: advertised_wnd=41348, cwnd=4916, window_size 4496 -> 4916
+【发送线程】准备发送: sending_len=135357, unacked=0, window_size=4916, cwnd=4916
+【发送线程】计算发送量: available_wnd=4916, remaining_data=135357, data_send_len=4916
+DEBUG: sending_len=135357, nextseq=24643, base=24643, cleaned_len=24643
+DEBUG: available_wnd=4916, total_unsent_data=135357, data_send_len=4916
+【发送线程】分包发送: seq=24643, dlen=1375, nextseq更新为26018
+【发送线程】分包发送: seq=26018, dlen=1375, nextseq更新为27393
+【发送线程】分包发送: seq=27393, dlen=1375, nextseq更新为28768
+【发送线程】分包发送: seq=28768, dlen=791, nextseq更新为29559
+【发送线程】等待条件: sending_len=135357, unacked=4916, window_size=4916
+【发送线程】等待条件: sending_len=135357, unacked=4916, window_size=4916
+【发送线程】等待条件: sending_len=135357, unacked=4916, window_size=4916
+【拥塞避免】收到ACK: cwnd 4916 -> 5300 (+384)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=5300, window_size 4916 -> 5300
+【拥塞避免】收到ACK: cwnd 5300 -> 5656 (+356)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=5656, window_size 5300 -> 5656
+【拥塞避免】收到ACK: cwnd 5656 -> 5990 (+334)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=5990, window_size 5656 -> 5990
+【发送线程】准备发送: sending_len=131232, unacked=791, window_size=5990, cwnd=5990
+【发送线程】计算发送量: available_wnd=5199, remaining_data=130441, data_send_len=5199
+DEBUG: sending_len=131232, nextseq=29559, base=28768, cleaned_len=28768
+DEBUG: available_wnd=5199, total_unsent_data=130441, data_send_len=5199
+【发送线程】分包发送: seq=29559, dlen=1375, nextseq更新为30934
+【发送线程】分包发送: seq=30934, dlen=1375, nextseq更新为32309
+【发送线程】分包发送: seq=32309, dlen=1375, nextseq更新为33684
+【发送线程】分包发送: seq=33684, dlen=1074, nextseq更新为34758
+【发送线程】等待条件: sending_len=131232, unacked=5990, window_size=5990
+【发送线程】等待条件: sending_len=131232, unacked=5990, window_size=5990
+【拥塞避免】收到ACK: cwnd 5990 -> 6305 (+315)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=6305, window_size 5990 -> 6305
+【拥塞避免】收到ACK: cwnd 6305 -> 6604 (+299)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=6604, window_size 6305 -> 6604
+【拥塞避免】收到ACK: cwnd 6604 -> 6890 (+286)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=6890, window_size 6604 -> 6890
+【拥塞避免】收到ACK: cwnd 6890 -> 7164 (+274)
+【窗口更新】收到ACK: advertised_wnd=38801, cwnd=7164, window_size 6890 -> 7164
+【发送线程】准备发送: sending_len=125242, unacked=0, window_size=7164, cwnd=7164
+【发送线程】计算发送量: available_wnd=7164, remaining_data=125242, data_send_len=7164
+DEBUG: sending_len=125242, nextseq=34758, base=34758, cleaned_len=34758
+DEBUG: available_wnd=7164, total_unsent_data=125242, data_send_len=7164
+【发送线程】分包发送: seq=34758, dlen=1375, nextseq更新为36133
+【发送线程】分包发送: seq=36133, dlen=1375, nextseq更新为37508
+【发送线程】分包发送: seq=37508, dlen=1375, nextseq更新为38883
+【发送线程】分包发送: seq=38883, dlen=1375, nextseq更新为40258
+【发送线程】分包发送: seq=40258, dlen=1375, nextseq更新为41633
+【发送线程】分包发送: seq=41633, dlen=289, nextseq更新为41922
+【发送线程】等待条件: sending_len=125242, unacked=7164, window_size=7164
+【tju_send】复制数据前: sending_len=125242, len=10000, 总长度=135242
+【tju_send】复制数据后: sending_len=135242
+【发送线程】等待条件: sending_len=135242, unacked=7164, window_size=7164
+【拥塞避免】收到ACK: cwnd 7164 -> 7427 (+263)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=7427, window_size 7164 -> 7427
+【拥塞避免】收到ACK: cwnd 7427 -> 7681 (+254)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=7681, window_size 7427 -> 7681
+【拥塞避免】收到ACK: cwnd 7681 -> 7927 (+246)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=7927, window_size 7681 -> 7927
+【拥塞避免】收到ACK: cwnd 7927 -> 8165 (+238)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=8165, window_size 7927 -> 8165
+【拥塞避免】收到ACK: cwnd 8165 -> 8396 (+231)
+【窗口更新】收到ACK: advertised_wnd=36836, cwnd=8396, window_size 8165 -> 8396
+【tju_send】复制数据前: sending_len=128078, len=10000, 总长度=138078
+【tju_send】复制数据后: sending_len=138078
+【发送线程】准备发送: sending_len=138078, unacked=0, window_size=8396, cwnd=8396
+【发送线程】计算发送量: available_wnd=8396, remaining_data=138078, data_send_len=8396
+DEBUG: sending_len=138078, nextseq=41922, base=41922, cleaned_len=41922
+DEBUG: available_wnd=8396, total_unsent_data=138078, data_send_len=8396
+【发送线程】分包发送: seq=41922, dlen=1375, nextseq更新为43297
+【发送线程】分包发送: seq=43297, dlen=1375, nextseq更新为44672
+【发送线程】分包发送: seq=44672, dlen=1375, nextseq更新为46047
+【发送线程】分包发送: seq=46047, dlen=1375, nextseq更新为47422
+【发送线程】分包发送: seq=47422, dlen=1375, nextseq更新为48797
+【发送线程】分包发送: seq=48797, dlen=1375, nextseq更新为50172
+【发送线程】分包发送: seq=50172, dlen=146, nextseq更新为50318
+【发送线程】等待条件: sending_len=138078, unacked=8396, window_size=8396
+【发送线程】等待条件: sending_len=138078, unacked=8396, window_size=8396
+【拥塞避免】收到ACK: cwnd 8396 -> 8621 (+225)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=8621, window_size 8396 -> 8621
+【拥塞避免】收到ACK: cwnd 8621 -> 8840 (+219)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=8840, window_size 8621 -> 8840
+【拥塞避免】收到ACK: cwnd 8840 -> 9053 (+213)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=9053, window_size 8840 -> 9053
+【拥塞避免】收到ACK: cwnd 9053 -> 9261 (+208)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=9261, window_size 9053 -> 9261
+【拥塞避免】收到ACK: cwnd 9261 -> 9465 (+204)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=9465, window_size 9261 -> 9465
+【拥塞避免】收到ACK: cwnd 9465 -> 9664 (+199)
+【窗口更新】收到ACK: advertised_wnd=35750, cwnd=9664, window_size 9465 -> 9664
+【拥塞避免】收到ACK: cwnd 9664 -> 9859 (+195)
+【窗口更新】收到ACK: advertised_wnd=35604, cwnd=9859, window_size 9664 -> 9859
+【tju_send】复制数据前: sending_len=129682, len=10000, 总长度=139682
+【tju_send】复制数据后: sending_len=139682
+【发送线程】准备发送: sending_len=139682, unacked=0, window_size=9859, cwnd=9859
+【发送线程】计算发送量: available_wnd=9859, remaining_data=139682, data_send_len=9859
+DEBUG: sending_len=139682, nextseq=50318, base=50318, cleaned_len=50318
+DEBUG: available_wnd=9859, total_unsent_data=139682, data_send_len=9859
+【发送线程】分包发送: seq=50318, dlen=1375, nextseq更新为51693
+【发送线程】分包发送: seq=51693, dlen=1375, nextseq更新为53068
+【发送线程】分包发送: seq=53068, dlen=1375, nextseq更新为54443
+【发送线程】分包发送: seq=54443, dlen=1375, nextseq更新为55818
+【发送线程】分包发送: seq=55818, dlen=1375, nextseq更新为57193
+【发送线程】分包发送: seq=57193, dlen=1375, nextseq更新为58568
+【发送线程】分包发送: seq=58568, dlen=1375, nextseq更新为59943
+【发送线程】分包发送: seq=59943, dlen=234, nextseq更新为60177
+【发送线程】等待条件: sending_len=139682, unacked=9859, window_size=9859
+【发送线程】等待条件: sending_len=139682, unacked=9859, window_size=9859
+【发送线程】等待条件: sending_len=139682, unacked=9859, window_size=9859
+【拥塞避免】收到ACK: cwnd 9859 -> 10050 (+191)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=10050, window_size 9859 -> 10050
+【拥塞避免】收到ACK: cwnd 10050 -> 10238 (+188)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=10238, window_size 10050 -> 10238
+【拥塞避免】收到ACK: cwnd 10238 -> 10422 (+184)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=10422, window_size 10238 -> 10422
+【拥塞避免】收到ACK: cwnd 10422 -> 10603 (+181)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=10603, window_size 10422 -> 10603
+【拥塞避免】收到ACK: cwnd 10603 -> 10781 (+178)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=10781, window_size 10603 -> 10781
+【发送线程】准备发送: sending_len=132807, unacked=2984, window_size=10781, cwnd=10781
+【发送线程】计算发送量: available_wnd=7797, remaining_data=129823, data_send_len=7797
+DEBUG: sending_len=132807, nextseq=60177, base=57193, cleaned_len=57193
+DEBUG: available_wnd=7797, total_unsent_data=129823, data_send_len=7797
+【发送线程】分包发送: seq=60177, dlen=1375, nextseq更新为61552
+【发送线程】分包发送: seq=61552, dlen=1375, nextseq更新为62927
+【发送线程】分包发送: seq=62927, dlen=1375, nextseq更新为64302
+【发送线程】分包发送: seq=64302, dlen=1375, nextseq更新为65677
+【发送线程】分包发送: seq=65677, dlen=1375, nextseq更新为67052
+【发送线程】分包发送: seq=67052, dlen=922, nextseq更新为67974
+【发送线程】等待条件: sending_len=132807, unacked=10781, window_size=10781
+【发送线程】等待条件: sending_len=132807, unacked=10781, window_size=10781
+【发送线程】等待条件: sending_len=132807, unacked=10781, window_size=10781
+【快速重传】触发快速重传: seq=57193, base=57193, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=57193
+【快速重传】查找包: retransmit_seq=57193
+【快速重传】检查包[9625]: seq=59943, acked=0
+【快速重传】检查包[11000]: seq=58568, acked=0
+【快速重传】检查包[12375]: seq=57193, acked=0
+【快速重传】找到要重传的包: seq=57193, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=57193, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=57193, 重传次数=1
+【快速重传】拥塞控制: ssthresh 2814 -> 5390, cwnd 10781 -> 14906, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=14906, window_size 10781 -> 14906
+【快速重传】触发快速重传: seq=57193, base=57193, 重复ACK计数=3
+【快速恢复】收到重复ACK: cwnd 14906 -> 16281 (+1375)
+【快速重传】开始处理快速重传: seq=57193
+【快速重传】查找包: retransmit_seq=57193
+【快速重传】检查包[9625]: seq=59943, acked=0
+【快速重传】检查包[11000]: seq=58568, acked=0
+【快速重传】检查包[12375]: seq=57193, acked=0
+【快速重传】找到要重传的包: seq=57193, data_len=1375, retransmit_count=1
+【快速重传】发送重传包: seq=57193, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=57193, 重传次数=2
+【快速重传】拥塞控制: ssthresh 5390 -> 8140, cwnd 14906 -> 20406, 状态 2 -> 2
+【快速重传】窗口更新: advertised_wnd=37125, cwnd=20406, window_size 14906 -> 20406
+【发送线程】准备发送: sending_len=132807, unacked=10781, window_size=20406, cwnd=20406
+【发送线程】计算发送量: available_wnd=9625, remaining_data=122026, data_send_len=9625
+DEBUG: sending_len=132807, nextseq=67974, base=57193, cleaned_len=57193
+DEBUG: available_wnd=9625, total_unsent_data=122026, data_send_len=9625
+【发送线程】分包发送: seq=67974, dlen=1375, nextseq更新为69349
+【发送线程】分包发送: seq=69349, dlen=1375, nextseq更新为70724
+【发送线程】分包发送: seq=70724, dlen=1375, nextseq更新为72099
+【发送线程】分包发送: seq=72099, dlen=1375, nextseq更新为73474
+【发送线程】分包发送: seq=73474, dlen=1375, nextseq更新为74849
+【发送线程】分包发送: seq=74849, dlen=1375, nextseq更新为76224
+【发送线程】分包发送: seq=76224, dlen=1375, nextseq更新为77599
+【发送线程】等待条件: sending_len=132807, unacked=20406, window_size=20406
+【快速恢复->拥塞避免】收到新ACK: cwnd 20406 -> 8140, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=33219, cwnd=8140, window_size 20406 -> 8140
+【tju_send】复制数据前: sending_len=122026, len=10000, 总长度=132026
+【tju_send】复制数据后: sending_len=132026
+【发送线程】等待条件: sending_len=132026, unacked=9625, window_size=8140
+【发送线程】等待条件: sending_len=132026, unacked=9625, window_size=8140
+【拥塞避免】收到ACK: cwnd 8140 -> 8372 (+232)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=8372, window_size 8140 -> 8372
+【拥塞避免】收到ACK: cwnd 8372 -> 8597 (+225)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=8597, window_size 8372 -> 8597
+【拥塞避免】收到ACK: cwnd 8597 -> 8816 (+219)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=8816, window_size 8597 -> 8816
+【拥塞避免】收到ACK: cwnd 8816 -> 9030 (+214)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=9030, window_size 8816 -> 9030
+【拥塞避免】收到ACK: cwnd 9030 -> 9239 (+209)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=9239, window_size 9030 -> 9239
+【拥塞避免】收到ACK: cwnd 9239 -> 9443 (+204)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=9443, window_size 9239 -> 9443
+【拥塞避免】收到ACK: cwnd 9443 -> 9643 (+200)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=9643, window_size 9443 -> 9643
+【tju_send】复制数据前: sending_len=122401, len=10000, 总长度=132401
+【tju_send】复制数据后: sending_len=132401
+【发送线程】准备发送: sending_len=132401, unacked=0, window_size=9643, cwnd=9643
+【发送线程】计算发送量: available_wnd=9643, remaining_data=132401, data_send_len=9643
+DEBUG: sending_len=132401, nextseq=77599, base=77599, cleaned_len=77599
+DEBUG: available_wnd=9643, total_unsent_data=132401, data_send_len=9643
+【发送线程】分包发送: seq=77599, dlen=1375, nextseq更新为78974
+【发送线程】分包发送: seq=78974, dlen=1375, nextseq更新为80349
+【发送线程】分包发送: seq=80349, dlen=1375, nextseq更新为81724
+【发送线程】分包发送: seq=81724, dlen=1375, nextseq更新为83099
+【发送线程】分包发送: seq=83099, dlen=1375, nextseq更新为84474
+【发送线程】分包发送: seq=84474, dlen=1375, nextseq更新为85849
+【发送线程】分包发送: seq=85849, dlen=1375, nextseq更新为87224
+【发送线程】分包发送: seq=87224, dlen=18, nextseq更新为87242
+【发送线程】等待条件: sending_len=132401, unacked=9643, window_size=9643
+【发送线程】等待条件: sending_len=132401, unacked=9643, window_size=9643
+【发送线程】等待条件: sending_len=132401, unacked=9643, window_size=9643
+【拥塞避免】收到ACK: cwnd 9643 -> 9839 (+196)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=9839, window_size 9643 -> 9839
+【拥塞避免】收到ACK: cwnd 9839 -> 10031 (+192)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=10031, window_size 9839 -> 10031
+【拥塞避免】收到ACK: cwnd 10031 -> 10219 (+188)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=10219, window_size 10031 -> 10219
+【拥塞避免】收到ACK: cwnd 10219 -> 10404 (+185)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=10404, window_size 10219 -> 10404
+【拥塞避免】收到ACK: cwnd 10404 -> 10585 (+181)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=10585, window_size 10404 -> 10585
+【tju_send】复制数据前: sending_len=125526, len=10000, 总长度=135526
+【tju_send】复制数据后: sending_len=135526
+【发送线程】准备发送: sending_len=135526, unacked=2768, window_size=10585, cwnd=10585
+【发送线程】计算发送量: available_wnd=7817, remaining_data=132758, data_send_len=7817
+DEBUG: sending_len=135526, nextseq=87242, base=84474, cleaned_len=84474
+DEBUG: available_wnd=7817, total_unsent_data=132758, data_send_len=7817
+【发送线程】分包发送: seq=87242, dlen=1375, nextseq更新为88617
+【发送线程】分包发送: seq=88617, dlen=1375, nextseq更新为89992
+【发送线程】分包发送: seq=89992, dlen=1375, nextseq更新为91367
+【发送线程】分包发送: seq=91367, dlen=1375, nextseq更新为92742
+【发送线程】分包发送: seq=92742, dlen=1375, nextseq更新为94117
+【发送线程】分包发送: seq=94117, dlen=942, nextseq更新为95059
+【发送线程】等待条件: sending_len=135526, unacked=10585, window_size=10585
+【发送线程】等待条件: sending_len=135526, unacked=10585, window_size=10585
+【发送线程】等待条件: sending_len=135526, unacked=10585, window_size=10585
+【快速重传】触发快速重传: seq=84474, base=84474, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=84474
+【快速重传】查找包: retransmit_seq=84474
+【快速重传】检查包[6875]: seq=94117, acked=0
+【快速重传】检查包[8250]: seq=92742, acked=0
+【快速重传】检查包[9625]: seq=91367, acked=0
+【快速重传】检查包[11000]: seq=89992, acked=0
+【快速重传】检查包[12375]: seq=88617, acked=0
+【快速重传】检查包[13750]: seq=87242, acked=0
+【快速重传】检查包[33000]: seq=87224, acked=0
+【快速重传】检查包[34375]: seq=85849, acked=0
+【快速重传】检查包[35750]: seq=84474, acked=0
+【快速重传】找到要重传的包: seq=84474, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=84474, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=84474, 重传次数=1
+【快速重传】拥塞控制: ssthresh 8140 -> 5292, cwnd 10585 -> 14710, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=14710, window_size 10585 -> 14710
+【发送线程】准备发送: sending_len=135526, unacked=10585, window_size=14710, cwnd=14710
+【发送线程】计算发送量: available_wnd=4125, remaining_data=124941, data_send_len=4125
+DEBUG: sending_len=135526, nextseq=95059, base=84474, cleaned_len=84474
+DEBUG: available_wnd=4125, total_unsent_data=124941, data_send_len=4125
+【发送线程】分包发送: seq=95059, dlen=1375, nextseq更新为96434
+【发送线程】分包发送: seq=96434, dlen=1375, nextseq更新为97809
+【发送线程】分包发送: seq=97809, dlen=1375, nextseq更新为99184
+【发送线程】等待条件: sending_len=135526, unacked=14710, window_size=14710
+【快速恢复->拥塞避免】收到新ACK: cwnd 14710 -> 5292, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=39857, cwnd=5292, window_size 14710 -> 5292
+【发送线程】等待条件: sending_len=131383, unacked=10567, window_size=5292
+【发送线程】等待条件: sending_len=131383, unacked=10567, window_size=5292
+【快速重传】触发快速重传: seq=88617, base=88617, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=88617
+【快速重传】查找包: retransmit_seq=88617
+【快速重传】检查包[6875]: seq=94117, acked=0
+【快速重传】检查包[8250]: seq=92742, acked=0
+【快速重传】检查包[9625]: seq=91367, acked=0
+【快速重传】检查包[11000]: seq=89992, acked=0
+【快速重传】检查包[12375]: seq=88617, acked=0
+【快速重传】找到要重传的包: seq=88617, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=88617, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=88617, 重传次数=1
+【快速重传】拥塞控制: ssthresh 5292 -> 2646, cwnd 5292 -> 9417, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=35750, cwnd=9417, window_size 5292 -> 9417
+【发送线程】等待条件: sending_len=131383, unacked=10567, window_size=9417
+【快速恢复->拥塞避免】收到新ACK: cwnd 9417 -> 2646, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=33433, cwnd=2646, window_size 9417 -> 2646
+【发送线程】准备发送: sending_len=120816, unacked=0, window_size=2646, cwnd=2646
+【发送线程】计算发送量: available_wnd=2646, remaining_data=120816, data_send_len=2646
+DEBUG: sending_len=120816, nextseq=99184, base=99184, cleaned_len=99184
+DEBUG: available_wnd=2646, total_unsent_data=120816, data_send_len=2646
+【发送线程】分包发送: seq=99184, dlen=1375, nextseq更新为100559
+【发送线程】分包发送: seq=100559, dlen=1271, nextseq更新为101830
+【发送线程】等待条件: sending_len=120816, unacked=2646, window_size=2646
+【tju_send】复制数据前: sending_len=120816, len=10000, 总长度=130816
+【tju_send】复制数据后: sending_len=130816
+【发送线程】等待条件: sending_len=130816, unacked=2646, window_size=2646
+【发送线程】等待条件: sending_len=130816, unacked=2646, window_size=2646
+【拥塞避免】收到ACK: cwnd 2646 -> 3360 (+714)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=3360, window_size 2646 -> 3360
+【拥塞避免】收到ACK: cwnd 3360 -> 3922 (+562)
+【窗口更新】收到ACK: advertised_wnd=41354, cwnd=3922, window_size 3360 -> 3922
+【tju_send】复制数据前: sending_len=128170, len=10000, 总长度=138170
+【tju_send】复制数据后: sending_len=138170
+【发送线程】准备发送: sending_len=138170, unacked=0, window_size=3922, cwnd=3922
+【发送线程】计算发送量: available_wnd=3922, remaining_data=138170, data_send_len=3922
+DEBUG: sending_len=138170, nextseq=101830, base=101830, cleaned_len=101830
+DEBUG: available_wnd=3922, total_unsent_data=138170, data_send_len=3922
+【发送线程】分包发送: seq=101830, dlen=1375, nextseq更新为103205
+【发送线程】分包发送: seq=103205, dlen=1375, nextseq更新为104580
+【发送线程】分包发送: seq=104580, dlen=1172, nextseq更新为105752
+【发送线程】等待条件: sending_len=138170, unacked=3922, window_size=3922
+【发送线程】等待条件: sending_len=138170, unacked=3922, window_size=3922
+【发送线程】等待条件: sending_len=138170, unacked=3922, window_size=3922
+【拥塞避免】收到ACK: cwnd 3922 -> 4404 (+482)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=4404, window_size 3922 -> 4404
+【拥塞避免】收到ACK: cwnd 4404 -> 4833 (+429)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=4833, window_size 4404 -> 4833
+【拥塞避免】收到ACK: cwnd 4833 -> 5224 (+391)
+【窗口更新】收到ACK: advertised_wnd=40078, cwnd=5224, window_size 4833 -> 5224
+【发送线程】准备发送: sending_len=134248, unacked=0, window_size=5224, cwnd=5224
+【发送线程】计算发送量: available_wnd=5224, remaining_data=134248, data_send_len=5224
+DEBUG: sending_len=134248, nextseq=105752, base=105752, cleaned_len=105752
+DEBUG: available_wnd=5224, total_unsent_data=134248, data_send_len=5224
+【发送线程】分包发送: seq=105752, dlen=1375, nextseq更新为107127
+【发送线程】分包发送: seq=107127, dlen=1375, nextseq更新为108502
+【发送线程】分包发送: seq=108502, dlen=1375, nextseq更新为109877
+【发送线程】分包发送: seq=109877, dlen=1099, nextseq更新为110976
+【发送线程】等待条件: sending_len=134248, unacked=5224, window_size=5224
+【发送线程】等待条件: sending_len=134248, unacked=5224, window_size=5224
+【发送线程】等待条件: sending_len=134248, unacked=5224, window_size=5224
+【拥塞避免】收到ACK: cwnd 5224 -> 5585 (+361)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=5585, window_size 5224 -> 5585
+【拥塞避免】收到ACK: cwnd 5585 -> 5923 (+338)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=5923, window_size 5585 -> 5923
+【拥塞避免】收到ACK: cwnd 5923 -> 6242 (+319)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=6242, window_size 5923 -> 6242
+【拥塞避免】收到ACK: cwnd 6242 -> 6544 (+302)
+【窗口更新】收到ACK: advertised_wnd=38776, cwnd=6544, window_size 6242 -> 6544
+【tju_send】复制数据前: sending_len=129024, len=10000, 总长度=139024
+【tju_send】复制数据后: sending_len=139024
+【发送线程】准备发送: sending_len=139024, unacked=0, window_size=6544, cwnd=6544
+【发送线程】计算发送量: available_wnd=6544, remaining_data=139024, data_send_len=6544
+DEBUG: sending_len=139024, nextseq=110976, base=110976, cleaned_len=110976
+DEBUG: available_wnd=6544, total_unsent_data=139024, data_send_len=6544
+【发送线程】分包发送: seq=110976, dlen=1375, nextseq更新为112351
+【发送线程】分包发送: seq=112351, dlen=1375, nextseq更新为113726
+【发送线程】分包发送: seq=113726, dlen=1375, nextseq更新为115101
+【发送线程】分包发送: seq=115101, dlen=1375, nextseq更新为116476
+【发送线程】分包发送: seq=116476, dlen=1044, nextseq更新为117520
+【发送线程】等待条件: sending_len=139024, unacked=6544, window_size=6544
+【发送线程】等待条件: sending_len=139024, unacked=6544, window_size=6544
+【发送线程】等待条件: sending_len=139024, unacked=6544, window_size=6544
+【拥塞避免】收到ACK: cwnd 6544 -> 6832 (+288)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=6832, window_size 6544 -> 6832
+【拥塞避免】收到ACK: cwnd 6832 -> 7108 (+276)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=7108, window_size 6832 -> 7108
+【拥塞避免】收到ACK: cwnd 7108 -> 7373 (+265)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=7373, window_size 7108 -> 7373
+【拥塞避免】收到ACK: cwnd 7373 -> 7629 (+256)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=7629, window_size 7373 -> 7629
+【拥塞避免】收到ACK: cwnd 7629 -> 7876 (+247)
+【窗口更新】收到ACK: advertised_wnd=37456, cwnd=7876, window_size 7629 -> 7876
+【发送线程】准备发送: sending_len=132480, unacked=0, window_size=7876, cwnd=7876
+【发送线程】计算发送量: available_wnd=7876, remaining_data=132480, data_send_len=7876
+DEBUG: sending_len=132480, nextseq=117520, base=117520, cleaned_len=117520
+DEBUG: available_wnd=7876, total_unsent_data=132480, data_send_len=7876
+【发送线程】分包发送: seq=117520, dlen=1375, nextseq更新为118895
+【发送线程】分包发送: seq=118895, dlen=1375, nextseq更新为120270
+【发送线程】分包发送: seq=120270, dlen=1375, nextseq更新为121645
+【发送线程】分包发送: seq=121645, dlen=1375, nextseq更新为123020
+【发送线程】分包发送: seq=123020, dlen=1375, nextseq更新为124395
+【发送线程】分包发送: seq=124395, dlen=1001, nextseq更新为125396
+【发送线程】等待条件: sending_len=132480, unacked=7876, window_size=7876
+【发送线程】等待条件: sending_len=132480, unacked=7876, window_size=7876
+【发送线程】等待条件: sending_len=132480, unacked=7876, window_size=7876
+【拥塞避免】收到ACK: cwnd 7876 -> 8116 (+240)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=8116, window_size 7876 -> 8116
+【拥塞避免】收到ACK: cwnd 8116 -> 8348 (+232)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=8348, window_size 8116 -> 8348
+【tju_send】复制数据前: sending_len=129730, len=10000, 总长度=139730
+【tju_send】复制数据后: sending_len=139730
+【发送线程】准备发送: sending_len=139730, unacked=5126, window_size=8348, cwnd=8348
+【发送线程】计算发送量: available_wnd=3222, remaining_data=134604, data_send_len=3222
+DEBUG: sending_len=139730, nextseq=125396, base=120270, cleaned_len=120270
+DEBUG: available_wnd=3222, total_unsent_data=134604, data_send_len=3222
+【发送线程】分包发送: seq=125396, dlen=1375, nextseq更新为126771
+【发送线程】分包发送: seq=126771, dlen=1375, nextseq更新为128146
+【发送线程】分包发送: seq=128146, dlen=472, nextseq更新为128618
+【发送线程】等待条件: sending_len=139730, unacked=8348, window_size=8348
+【发送线程】等待条件: sending_len=139730, unacked=8348, window_size=8348
+【快速重传】触发快速重传: seq=120270, base=120270, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=120270
+【快速重传】查找包: retransmit_seq=120270
+【快速重传】检查包[15125]: seq=124395, acked=0
+【快速重传】检查包[16500]: seq=123020, acked=0
+【快速重传】检查包[17875]: seq=121645, acked=0
+【快速重传】检查包[19250]: seq=120270, acked=0
+【快速重传】找到要重传的包: seq=120270, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=120270, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=120270, 重传次数=1
+【快速重传】拥塞控制: ssthresh 2646 -> 4174, cwnd 8348 -> 12473, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=39875, cwnd=12473, window_size 8348 -> 12473
+【发送线程】等待条件: sending_len=139730, unacked=8348, window_size=8348
+【发送线程】准备发送: sending_len=139730, unacked=8348, window_size=12473, cwnd=12473
+【发送线程】计算发送量: available_wnd=4125, remaining_data=131382, data_send_len=4125
+DEBUG: sending_len=139730, nextseq=128618, base=120270, cleaned_len=120270
+DEBUG: available_wnd=4125, total_unsent_data=131382, data_send_len=4125
+【发送线程】分包发送: seq=128618, dlen=1375, nextseq更新为129993
+【发送线程】分包发送: seq=129993, dlen=1375, nextseq更新为131368
+【发送线程】分包发送: seq=131368, dlen=1375, nextseq更新为132743
+【发送线程】等待条件: sending_len=139730, unacked=12473, window_size=12473
+【快速恢复->拥塞避免】收到新ACK: cwnd 12473 -> 4174, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=35652, cwnd=4174, window_size 12473 -> 4174
+【发送线程】准备发送: sending_len=131382, unacked=4125, window_size=4174, cwnd=4174
+【发送线程】计算发送量: available_wnd=49, remaining_data=127257, data_send_len=49
+DEBUG: sending_len=131382, nextseq=132743, base=128618, cleaned_len=128618
+DEBUG: available_wnd=49, total_unsent_data=127257, data_send_len=49
+【发送线程】发送成功: seq=132743, dlen=49, nextseq更新为132792
+【发送线程】等待条件: sending_len=131382, unacked=4174, window_size=4174
+【拥塞避免】收到ACK: cwnd 4174 -> 4626 (+452)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=4626, window_size 4174 -> 4626
+【拥塞避免】收到ACK: cwnd 4626 -> 5034 (+408)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=5034, window_size 4626 -> 5034
+【拥塞避免】收到ACK: cwnd 5034 -> 5409 (+375)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=5409, window_size 5034 -> 5409
+【tju_send】复制数据前: sending_len=127257, len=10000, 总长度=137257
+【tju_send】复制数据后: sending_len=137257
+【发送线程】准备发送: sending_len=137257, unacked=49, window_size=5409, cwnd=5409
+【发送线程】计算发送量: available_wnd=5360, remaining_data=137208, data_send_len=5360
+DEBUG: sending_len=137257, nextseq=132792, base=132743, cleaned_len=132743
+DEBUG: available_wnd=5360, total_unsent_data=137208, data_send_len=5360
+【发送线程】分包发送: seq=132792, dlen=1375, nextseq更新为134167
+【发送线程】分包发送: seq=134167, dlen=1375, nextseq更新为135542
+【发送线程】分包发送: seq=135542, dlen=1375, nextseq更新为136917
+【发送线程】分包发送: seq=136917, dlen=1235, nextseq更新为138152
+【发送线程】等待条件: sending_len=137257, unacked=5409, window_size=5409
+【拥塞避免】收到ACK: cwnd 5409 -> 5758 (+349)
+【窗口更新】收到ACK: advertised_wnd=43951, cwnd=5758, window_size 5409 -> 5758
+【发送线程】准备发送: sending_len=137208, unacked=5360, window_size=5758, cwnd=5758
+【发送线程】计算发送量: available_wnd=398, remaining_data=131848, data_send_len=398
+DEBUG: sending_len=137208, nextseq=138152, base=132792, cleaned_len=132792
+DEBUG: available_wnd=398, total_unsent_data=131848, data_send_len=398
+【发送线程】发送成功: seq=138152, dlen=398, nextseq更新为138550
+【发送线程】等待条件: sending_len=137208, unacked=5758, window_size=5758
+【拥塞避免】收到ACK: cwnd 5758 -> 6086 (+328)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=6086, window_size 5758 -> 6086
+【拥塞避免】收到ACK: cwnd 6086 -> 6396 (+310)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=6396, window_size 6086 -> 6396
+【拥塞避免】收到ACK: cwnd 6396 -> 6691 (+295)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=6691, window_size 6396 -> 6691
+【拥塞避免】收到ACK: cwnd 6691 -> 6973 (+282)
+【窗口更新】收到ACK: advertised_wnd=38640, cwnd=6973, window_size 6691 -> 6973
+【发送线程】准备发送: sending_len=131848, unacked=398, window_size=6973, cwnd=6973
+【发送线程】计算发送量: available_wnd=6575, remaining_data=131450, data_send_len=6575
+DEBUG: sending_len=131848, nextseq=138550, base=138152, cleaned_len=138152
+DEBUG: available_wnd=6575, total_unsent_data=131450, data_send_len=6575
+【发送线程】分包发送: seq=138550, dlen=1375, nextseq更新为139925
+【发送线程】分包发送: seq=139925, dlen=1375, nextseq更新为141300
+【发送线程】分包发送: seq=141300, dlen=1375, nextseq更新为142675
+【发送线程】分包发送: seq=142675, dlen=1375, nextseq更新为144050
+【发送线程】分包发送: seq=144050, dlen=1075, nextseq更新为145125
+【发送线程】等待条件: sending_len=131848, unacked=6973, window_size=6973
+【拥塞避免】收到ACK: cwnd 6973 -> 7244 (+271)
+【窗口更新】收到ACK: advertised_wnd=43602, cwnd=7244, window_size 6973 -> 7244
+【发送线程】准备发送: sending_len=131450, unacked=6575, window_size=7244, cwnd=7244
+【发送线程】计算发送量: available_wnd=669, remaining_data=124875, data_send_len=669
+DEBUG: sending_len=131450, nextseq=145125, base=138550, cleaned_len=138550
+DEBUG: available_wnd=669, total_unsent_data=124875, data_send_len=669
+【发送线程】发送成功: seq=145125, dlen=669, nextseq更新为145794
+【发送线程】等待条件: sending_len=131450, unacked=7244, window_size=7244
+【拥塞避免】收到ACK: cwnd 7244 -> 7504 (+260)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=7504, window_size 7244 -> 7504
+【拥塞避免】收到ACK: cwnd 7504 -> 7755 (+251)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=7755, window_size 7504 -> 7755
+【拥塞避免】收到ACK: cwnd 7755 -> 7998 (+243)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=7998, window_size 7755 -> 7998
+【tju_send】复制数据前: sending_len=125950, len=10000, 总长度=135950
+【tju_send】复制数据后: sending_len=135950
+【发送线程】准备发送: sending_len=135950, unacked=1744, window_size=7998, cwnd=7998
+【发送线程】计算发送量: available_wnd=6254, remaining_data=134206, data_send_len=6254
+DEBUG: sending_len=135950, nextseq=145794, base=144050, cleaned_len=144050
+DEBUG: available_wnd=6254, total_unsent_data=134206, data_send_len=6254
+【发送线程】分包发送: seq=145794, dlen=1375, nextseq更新为147169
+【发送线程】分包发送: seq=147169, dlen=1375, nextseq更新为148544
+【发送线程】分包发送: seq=148544, dlen=1375, nextseq更新为149919
+【发送线程】分包发送: seq=149919, dlen=1375, nextseq更新为151294
+【发送线程】分包发送: seq=151294, dlen=754, nextseq更新为152048
+【发送线程】等待条件: sending_len=135950, unacked=7998, window_size=7998
+【发送线程】等待条件: sending_len=135950, unacked=7998, window_size=7998
+【快速重传】触发快速重传: seq=144050, base=144050, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=144050
+【快速重传】查找包: retransmit_seq=144050
+【快速重传】检查包[0]: seq=148544, acked=0
+【快速重传】检查包[1375]: seq=147169, acked=0
+【快速重传】检查包[2750]: seq=145794, acked=0
+【快速重传】检查包[6875]: seq=145125, acked=0
+【快速重传】检查包[24750]: seq=144050, acked=0
+【快速重传】找到要重传的包: seq=144050, data_len=1075, retransmit_count=0
+【快速重传】发送重传包: seq=144050, data_len=1075, total_len=1095
+【快速重传】重传完成: seq=144050, 重传次数=1
+【快速重传】拥塞控制: ssthresh 4174 -> 3999, cwnd 7998 -> 12123, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=12123, window_size 7998 -> 12123
+【发送线程】准备发送: sending_len=135950, unacked=7998, window_size=12123, cwnd=12123
+【发送线程】计算发送量: available_wnd=4125, remaining_data=127952, data_send_len=4125
+DEBUG: sending_len=135950, nextseq=152048, base=144050, cleaned_len=144050
+DEBUG: available_wnd=4125, total_unsent_data=127952, data_send_len=4125
+【发送线程】分包发送: seq=152048, dlen=1375, nextseq更新为153423
+【发送线程】分包发送: seq=153423, dlen=1375, nextseq更新为154798
+【发送线程】分包发送: seq=154798, dlen=1375, nextseq更新为156173
+【发送线程】等待条件: sending_len=135950, unacked=12123, window_size=12123
+【发送线程】等待条件: sending_len=135950, unacked=12123, window_size=12123
+【快速恢复->拥塞避免】收到新ACK: cwnd 12123 -> 3999, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=36002, cwnd=3999, window_size 12123 -> 3999
+【tju_send】复制数据前: sending_len=127952, len=10000, 总长度=137952
+【tju_send】复制数据后: sending_len=137952
+【拥塞避免】收到ACK: cwnd 3999 -> 4471 (+472)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=4471, window_size 3999 -> 4471
+【拥塞避免】收到ACK: cwnd 4471 -> 4893 (+422)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=4893, window_size 4471 -> 4893
+【拥塞避免】收到ACK: cwnd 4893 -> 5279 (+386)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=5279, window_size 4893 -> 5279
+【发送线程】准备发送: sending_len=135202, unacked=0, window_size=5279, cwnd=5279
+【发送线程】计算发送量: available_wnd=5279, remaining_data=135202, data_send_len=5279
+DEBUG: sending_len=135202, nextseq=156173, base=156173, cleaned_len=154798
+DEBUG: available_wnd=5279, total_unsent_data=135202, data_send_len=5279
+【发送线程】分包发送: seq=156173, dlen=1375, nextseq更新为157548
+【发送线程】分包发送: seq=157548, dlen=1375, nextseq更新为158923
+【发送线程】分包发送: seq=158923, dlen=1375, nextseq更新为160298
+【发送线程】分包发送: seq=160298, dlen=1154, nextseq更新为161452
+【发送线程】等待条件: sending_len=135202, unacked=5279, window_size=5279
+【发送线程】等待条件: sending_len=133827, unacked=5279, window_size=5279
+【拥塞避免】收到ACK: cwnd 5279 -> 5637 (+358)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=5637, window_size 5279 -> 5637
+【拥塞避免】收到ACK: cwnd 5637 -> 5972 (+335)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=5972, window_size 5637 -> 5972
+【拥塞避免】收到ACK: cwnd 5972 -> 6288 (+316)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=6288, window_size 5972 -> 6288
+【发送线程】准备发送: sending_len=129702, unacked=1154, window_size=6288, cwnd=6288
+【发送线程】计算发送量: available_wnd=5134, remaining_data=128548, data_send_len=5134
+DEBUG: sending_len=129702, nextseq=161452, base=160298, cleaned_len=160298
+DEBUG: available_wnd=5134, total_unsent_data=128548, data_send_len=5134
+【发送线程】分包发送: seq=161452, dlen=1375, nextseq更新为162827
+【发送线程】分包发送: seq=162827, dlen=1375, nextseq更新为164202
+【发送线程】分包发送: seq=164202, dlen=1375, nextseq更新为165577
+【发送线程】分包发送: seq=165577, dlen=1009, nextseq更新为166586
+【发送线程】等待条件: sending_len=129702, unacked=6288, window_size=6288
+【tju_send】复制数据前: sending_len=129702, len=10000, 总长度=139702
+【tju_send】复制数据后: sending_len=139702
+【发送线程】等待条件: sending_len=139702, unacked=6288, window_size=6288
+【拥塞避免】收到ACK: cwnd 6288 -> 6588 (+300)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=6588, window_size 6288 -> 6588
+【拥塞避免】收到ACK: cwnd 6588 -> 6874 (+286)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=6874, window_size 6588 -> 6874
+【拥塞避免】收到ACK: cwnd 6874 -> 7149 (+275)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=7149, window_size 6874 -> 7149
+【拥塞避免】收到ACK: cwnd 7149 -> 7413 (+264)
+【窗口更新】收到ACK: advertised_wnd=38866, cwnd=7413, window_size 7149 -> 7413
+【发送线程】准备发送: sending_len=133414, unacked=0, window_size=7413, cwnd=7413
+【发送线程】计算发送量: available_wnd=7413, remaining_data=133414, data_send_len=7413
+DEBUG: sending_len=133414, nextseq=166586, base=166586, cleaned_len=166586
+DEBUG: available_wnd=7413, total_unsent_data=133414, data_send_len=7413
+【发送线程】分包发送: seq=166586, dlen=1375, nextseq更新为167961
+【发送线程】分包发送: seq=167961, dlen=1375, nextseq更新为169336
+【发送线程】分包发送: seq=169336, dlen=1375, nextseq更新为170711
+【发送线程】分包发送: seq=170711, dlen=1375, nextseq更新为172086
+【发送线程】分包发送: seq=172086, dlen=1375, nextseq更新为173461
+【发送线程】分包发送: seq=173461, dlen=538, nextseq更新为173999
+【发送线程】等待条件: sending_len=133414, unacked=7413, window_size=7413
+【发送线程】等待条件: sending_len=133414, unacked=7413, window_size=7413
+【拥塞避免】收到ACK: cwnd 7413 -> 7668 (+255)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=7668, window_size 7413 -> 7668
+【拥塞避免】收到ACK: cwnd 7668 -> 7914 (+246)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=7914, window_size 7668 -> 7914
+【拥塞避免】收到ACK: cwnd 7914 -> 8152 (+238)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=8152, window_size 7914 -> 8152
+【拥塞避免】收到ACK: cwnd 8152 -> 8383 (+231)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=8383, window_size 8152 -> 8383
+【发送线程】准备发送: sending_len=129289, unacked=1913, window_size=8383, cwnd=8383
+【发送线程】计算发送量: available_wnd=6470, remaining_data=127376, data_send_len=6470
+DEBUG: sending_len=129289, nextseq=173999, base=172086, cleaned_len=170711
+DEBUG: available_wnd=6470, total_unsent_data=127376, data_send_len=6470
+【发送线程】分包发送: seq=173999, dlen=1375, nextseq更新为175374
+【发送线程】分包发送: seq=175374, dlen=1375, nextseq更新为176749
+【发送线程】分包发送: seq=176749, dlen=1375, nextseq更新为178124
+【发送线程】分包发送: seq=178124, dlen=1375, nextseq更新为179499
+【发送线程】分包发送: seq=179499, dlen=970, nextseq更新为180469
+【发送线程】等待条件: sending_len=129289, unacked=8383, window_size=8383
+【拥塞避免】收到ACK: cwnd 8383 -> 8608 (+225)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=8608, window_size 8383 -> 8608
+【tju_send】复制数据前: sending_len=127914, len=10000, 总长度=137914
+【tju_send】复制数据后: sending_len=137914
+【拥塞避免】收到ACK: cwnd 8608 -> 8827 (+219)
+【窗口更新】收到ACK: advertised_wnd=36587, cwnd=8827, window_size 8608 -> 8827
+【发送线程】准备发送: sending_len=136001, unacked=6470, window_size=8827, cwnd=8827
+【发送线程】计算发送量: available_wnd=2357, remaining_data=129531, data_send_len=2357
+DEBUG: sending_len=136001, nextseq=180469, base=173999, cleaned_len=173999
+DEBUG: available_wnd=2357, total_unsent_data=129531, data_send_len=2357
+【发送线程】分包发送: seq=180469, dlen=1375, nextseq更新为181844
+【发送线程】分包发送: seq=181844, dlen=982, nextseq更新为182826
+【发送线程】等待条件: sending_len=136001, unacked=8827, window_size=8827
+【拥塞避免】收到ACK: cwnd 8827 -> 9041 (+214)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=9041, window_size 8827 -> 9041
+【拥塞避免】收到ACK: cwnd 9041 -> 9250 (+209)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=9250, window_size 9041 -> 9250
+【拥塞避免】收到ACK: cwnd 9250 -> 9454 (+204)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=9454, window_size 9250 -> 9454
+【拥塞避免】收到ACK: cwnd 9454 -> 9653 (+199)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=9653, window_size 9454 -> 9653
+【拥塞避免】收到ACK: cwnd 9653 -> 9848 (+195)
+【窗口更新】收到ACK: advertised_wnd=37530, cwnd=9848, window_size 9653 -> 9848
+【tju_send】复制数据前: sending_len=129531, len=10000, 总长度=139531
+【tju_send】复制数据后: sending_len=139531
+【发送线程】准备发送: sending_len=139531, unacked=2357, window_size=9848, cwnd=9848
+【发送线程】计算发送量: available_wnd=7491, remaining_data=137174, data_send_len=7491
+DEBUG: sending_len=139531, nextseq=182826, base=180469, cleaned_len=180469
+DEBUG: available_wnd=7491, total_unsent_data=137174, data_send_len=7491
+【发送线程】分包发送: seq=182826, dlen=1375, nextseq更新为184201
+【发送线程】分包发送: seq=184201, dlen=1375, nextseq更新为185576
+【发送线程】分包发送: seq=185576, dlen=1375, nextseq更新为186951
+【发送线程】分包发送: seq=186951, dlen=1375, nextseq更新为188326
+【发送线程】分包发送: seq=188326, dlen=1375, nextseq更新为189701
+【发送线程】分包发送: seq=189701, dlen=616, nextseq更新为190317
+【发送线程】等待条件: sending_len=139531, unacked=9848, window_size=9848
+【拥塞避免】收到ACK: cwnd 9848 -> 10039 (+191)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=10039, window_size 9848 -> 10039
+【拥塞避免】收到ACK: cwnd 10039 -> 10227 (+188)
+【窗口更新】收到ACK: advertised_wnd=41643, cwnd=10227, window_size 10039 -> 10227
+【发送线程】准备发送: sending_len=137174, unacked=7491, window_size=10227, cwnd=10227
+【发送线程】计算发送量: available_wnd=2736, remaining_data=129683, data_send_len=2736
+DEBUG: sending_len=137174, nextseq=190317, base=182826, cleaned_len=182826
+DEBUG: available_wnd=2736, total_unsent_data=129683, data_send_len=2736
+【发送线程】分包发送: seq=190317, dlen=1375, nextseq更新为191692
+【发送线程】分包发送: seq=191692, dlen=1361, nextseq更新为193053
+【发送线程】等待条件: sending_len=137174, unacked=10227, window_size=10227
+【拥塞避免】收到ACK: cwnd 10227 -> 10411 (+184)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=10411, window_size 10227 -> 10411
+【拥塞避免】收到ACK: cwnd 10411 -> 10592 (+181)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=10592, window_size 10411 -> 10592
+【拥塞避免】收到ACK: cwnd 10592 -> 10770 (+178)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=10770, window_size 10592 -> 10770
+【拥塞避免】收到ACK: cwnd 10770 -> 10945 (+175)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=10945, window_size 10770 -> 10945
+【拥塞避免】收到ACK: cwnd 10945 -> 11117 (+172)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=11117, window_size 10945 -> 11117
+【拥塞避免】收到ACK: cwnd 11117 -> 11287 (+170)
+【窗口更新】收到ACK: advertised_wnd=36509, cwnd=11287, window_size 11117 -> 11287
+【tju_send】复制数据前: sending_len=129683, len=10000, 总长度=139683
+【tju_send】复制数据后: sending_len=139683
+【发送线程】准备发送: sending_len=139683, unacked=2736, window_size=11287, cwnd=11287
+【发送线程】计算发送量: available_wnd=8551, remaining_data=136947, data_send_len=8551
+DEBUG: sending_len=139683, nextseq=193053, base=190317, cleaned_len=190317
+DEBUG: available_wnd=8551, total_unsent_data=136947, data_send_len=8551
+【发送线程】分包发送: seq=193053, dlen=1375, nextseq更新为194428
+【发送线程】分包发送: seq=194428, dlen=1375, nextseq更新为195803
+【发送线程】分包发送: seq=195803, dlen=1375, nextseq更新为197178
+【发送线程】分包发送: seq=197178, dlen=1375, nextseq更新为198553
+【发送线程】分包发送: seq=198553, dlen=1375, nextseq更新为199928
+【发送线程】分包发送: seq=199928, dlen=1375, nextseq更新为201303
+【发送线程】分包发送: seq=201303, dlen=301, nextseq更新为201604
+【发送线程】等待条件: sending_len=139683, unacked=11287, window_size=11287
+【拥塞避免】收到ACK: cwnd 11287 -> 11454 (+167)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=11454, window_size 11287 -> 11454
+【拥塞避免】收到ACK: cwnd 11454 -> 11619 (+165)
+【窗口更新】收到ACK: advertised_wnd=41264, cwnd=11619, window_size 11454 -> 11619
+【发送线程】准备发送: sending_len=136947, unacked=8551, window_size=11619, cwnd=11619
+【发送线程】计算发送量: available_wnd=3068, remaining_data=128396, data_send_len=3068
+DEBUG: sending_len=136947, nextseq=201604, base=193053, cleaned_len=193053
+DEBUG: available_wnd=3068, total_unsent_data=128396, data_send_len=3068
+【发送线程】分包发送: seq=201604, dlen=1375, nextseq更新为202979
+【发送线程】分包发送: seq=202979, dlen=1375, nextseq更新为204354
+【发送线程】分包发送: seq=204354, dlen=318, nextseq更新为204672
+【发送线程】等待条件: sending_len=136947, unacked=11619, window_size=11619
+【拥塞避免】收到ACK: cwnd 11619 -> 11781 (+162)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=11781, window_size 11619 -> 11781
+【拥塞避免】收到ACK: cwnd 11781 -> 11941 (+160)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=11941, window_size 11781 -> 11941
+【拥塞避免】收到ACK: cwnd 11941 -> 12099 (+158)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=12099, window_size 11941 -> 12099
+【拥塞避免】收到ACK: cwnd 12099 -> 12255 (+156)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=12255, window_size 12099 -> 12255
+【拥塞避免】收到ACK: cwnd 12255 -> 12409 (+154)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=12409, window_size 12255 -> 12409
+【拥塞避免】收到ACK: cwnd 12409 -> 12561 (+152)
+【窗口更新】收到ACK: advertised_wnd=35750, cwnd=12561, window_size 12409 -> 12561
+【拥塞避免】收到ACK: cwnd 12561 -> 12711 (+150)
+【窗口更新】收到ACK: advertised_wnd=35449, cwnd=12711, window_size 12561 -> 12711
+【tju_send】复制数据前: sending_len=128697, len=10000, 总长度=138697
+【tju_send】复制数据后: sending_len=138697
+【发送线程】准备发送: sending_len=138396, unacked=3068, window_size=12711, cwnd=12711
+【发送线程】计算发送量: available_wnd=9643, remaining_data=135328, data_send_len=9643
+DEBUG: sending_len=138396, nextseq=204672, base=201604, cleaned_len=201604
+DEBUG: available_wnd=9643, total_unsent_data=135328, data_send_len=9643
+【发送线程】分包发送: seq=204672, dlen=1375, nextseq更新为206047
+【发送线程】分包发送: seq=206047, dlen=1375, nextseq更新为207422
+【发送线程】分包发送: seq=207422, dlen=1375, nextseq更新为208797
+【发送线程】分包发送: seq=208797, dlen=1375, nextseq更新为210172
+【发送线程】分包发送: seq=210172, dlen=1375, nextseq更新为211547
+【发送线程】分包发送: seq=211547, dlen=1375, nextseq更新为212922
+【发送线程】分包发送: seq=212922, dlen=1375, nextseq更新为214297
+【发送线程】分包发送: seq=214297, dlen=18, nextseq更新为214315
+【发送线程】等待条件: sending_len=138396, unacked=12711, window_size=12711
+【拥塞避免】收到ACK: cwnd 12711 -> 12859 (+148)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=12859, window_size 12711 -> 12859
+【拥塞避免】收到ACK: cwnd 12859 -> 13006 (+147)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=13006, window_size 12859 -> 13006
+【拥塞避免】收到ACK: cwnd 13006 -> 13151 (+145)
+【窗口更新】收到ACK: advertised_wnd=40932, cwnd=13151, window_size 13006 -> 13151
+【发送线程】准备发送: sending_len=135328, unacked=9643, window_size=13151, cwnd=13151
+【发送线程】计算发送量: available_wnd=3508, remaining_data=125685, data_send_len=3508
+DEBUG: sending_len=135328, nextseq=214315, base=204672, cleaned_len=204672
+DEBUG: available_wnd=3508, total_unsent_data=125685, data_send_len=3508
+【发送线程】分包发送: seq=214315, dlen=1375, nextseq更新为215690
+【发送线程】分包发送: seq=215690, dlen=1375, nextseq更新为217065
+【发送线程】分包发送: seq=217065, dlen=758, nextseq更新为217823
+【发送线程】等待条件: sending_len=135328, unacked=13151, window_size=13151
+【拥塞避免】收到ACK: cwnd 13151 -> 13294 (+143)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=13294, window_size 13151 -> 13294
+【快速重传】触发快速重传: seq=206047, base=206047, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=206047
+【快速重传】查找包: retransmit_seq=206047
+【快速重传】检查包[12375]: seq=217065, acked=0
+【快速重传】检查包[13750]: seq=215690, acked=0
+【快速重传】检查包[15125]: seq=214315, acked=0
+【快速重传】检查包[34375]: seq=214297, acked=0
+【快速重传】检查包[35750]: seq=212922, acked=0
+【快速重传】检查包[37125]: seq=211547, acked=0
+【快速重传】检查包[38500]: seq=210172, acked=0
+【快速重传】检查包[39875]: seq=208797, acked=0
+【快速重传】检查包[41250]: seq=207422, acked=0
+【快速重传】检查包[42625]: seq=206047, acked=0
+【快速重传】找到要重传的包: seq=206047, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=206047, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=206047, 重传次数=1
+【快速重传】拥塞控制: ssthresh 3999 -> 6647, cwnd 13294 -> 17419, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=17419, window_size 13294 -> 17419
+【快速重传】触发快速重传: seq=206047, base=206047, 重复ACK计数=3
+【快速恢复】收到重复ACK: cwnd 17419 -> 18794 (+1375)
+【快速重传】开始处理快速重传: seq=206047
+【快速重传】查找包: retransmit_seq=206047
+【快速重传】检查包[12375]: seq=217065, acked=0
+【快速重传】检查包[13750]: seq=215690, acked=0
+【快速重传】检查包[15125]: seq=214315, acked=0
+【快速重传】检查包[34375]: seq=214297, acked=0
+【快速重传】检查包[35750]: seq=212922, acked=0
+【快速重传】检查包[37125]: seq=211547, acked=0
+【快速重传】检查包[38500]: seq=210172, acked=0
+【快速重传】检查包[39875]: seq=208797, acked=0
+【快速重传】检查包[41250]: seq=207422, acked=0
+【快速重传】检查包[42625]: seq=206047, acked=0
+【快速重传】找到要重传的包: seq=206047, data_len=1375, retransmit_count=1
+【快速重传】发送重传包: seq=206047, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=206047, 重传次数=2
+【快速重传】拥塞控制: ssthresh 6647 -> 9397, cwnd 17419 -> 22919, 状态 2 -> 2
+【快速重传】窗口更新: advertised_wnd=37125, cwnd=22919, window_size 17419 -> 22919
+【发送线程】准备发送: sending_len=133953, unacked=11776, window_size=22919, cwnd=22919
+【发送线程】计算发送量: available_wnd=11143, remaining_data=122177, data_send_len=11143
+DEBUG: sending_len=133953, nextseq=217823, base=206047, cleaned_len=206047
+DEBUG: available_wnd=11143, total_unsent_data=122177, data_send_len=11143
+【发送线程】分包发送: seq=217823, dlen=1375, nextseq更新为219198
+【发送线程】分包发送: seq=219198, dlen=1375, nextseq更新为220573
+【发送线程】分包发送: seq=220573, dlen=1375, nextseq更新为221948
+【发送线程】分包发送: seq=221948, dlen=1375, nextseq更新为223323
+【发送线程】分包发送: seq=223323, dlen=1375, nextseq更新为224698
+【发送线程】分包发送: seq=224698, dlen=1375, nextseq更新为226073
+【发送线程】分包发送: seq=226073, dlen=1375, nextseq更新为227448
+【发送线程】分包发送: seq=227448, dlen=1375, nextseq更新为228823
+【发送线程】分包发送: seq=228823, dlen=143, nextseq更新为228966
+【发送线程】等待条件: sending_len=133953, unacked=22919, window_size=22919
+【快速重传】触发快速重传: seq=206047, base=206047, 重复ACK计数=3
+【快速恢复】收到重复ACK: cwnd 22919 -> 24294 (+1375)
+【快速重传】开始处理快速重传: seq=206047
+【快速重传】查找包: retransmit_seq=206047
+【快速重传】检查包[2750]: seq=217823, acked=0
+【快速重传】检查包[4125]: seq=219198, acked=0
+【快速重传】检查包[5500]: seq=220573, acked=0
+【快速重传】检查包[6875]: seq=221948, acked=0
+【快速重传】检查包[8250]: seq=223323, acked=0
+【快速重传】检查包[9625]: seq=224698, acked=0
+【快速重传】检查包[11000]: seq=226073, acked=0
+【快速重传】检查包[12375]: seq=217065, acked=0
+【快速重传】检查包[13750]: seq=215690, acked=0
+【快速重传】检查包[15125]: seq=214315, acked=0
+【快速重传】检查包[31625]: seq=228823, acked=0
+【快速重传】检查包[33000]: seq=227448, acked=0
+【快速重传】检查包[34375]: seq=214297, acked=0
+【快速重传】检查包[35750]: seq=212922, acked=0
+【快速重传】检查包[37125]: seq=211547, acked=0
+【快速重传】检查包[38500]: seq=210172, acked=0
+【快速重传】检查包[39875]: seq=208797, acked=0
+【快速重传】检查包[41250]: seq=207422, acked=0
+【快速重传】检查包[42625]: seq=206047, acked=0
+【快速重传】找到要重传的包: seq=206047, data_len=1375, retransmit_count=2
+【快速重传】发送重传包: seq=206047, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=206047, 重传次数=3
+【快速重传】拥塞控制: ssthresh 9397 -> 12147, cwnd 22919 -> 28419, 状态 2 -> 2
+【快速重传】窗口更新: advertised_wnd=33000, cwnd=28419, window_size 22919 -> 28419
+【发送线程】准备发送: sending_len=133953, unacked=22919, window_size=28419, cwnd=28419
+【发送线程】计算发送量: available_wnd=5500, remaining_data=111034, data_send_len=5500
+DEBUG: sending_len=133953, nextseq=228966, base=206047, cleaned_len=206047
+DEBUG: available_wnd=5500, total_unsent_data=111034, data_send_len=5500
+【快速恢复->拥塞避免】收到新ACK: cwnd 28419 -> 12147, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=32224, cwnd=12147, window_size 28419 -> 12147
+【发送线程】分包发送: seq=228966, dlen=1375, nextseq更新为230341
+【发送线程】分包发送: seq=230341, dlen=1375, nextseq更新为231716
+【发送线程】分包发送: seq=231716, dlen=1375, nextseq更新为233091
+【发送线程】分包发送: seq=233091, dlen=1375, nextseq更新为234466
+【发送线程】等待条件: sending_len=133953, unacked=16643, window_size=12147
+【拥塞避免】收到ACK: cwnd 12147 -> 12302 (+155)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=12302, window_size 12147 -> 12302
+【拥塞避免】收到ACK: cwnd 12302 -> 12455 (+153)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=12455, window_size 12302 -> 12455
+【拥塞避免】收到ACK: cwnd 12455 -> 12606 (+151)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=12606, window_size 12455 -> 12606
+【拥塞避免】收到ACK: cwnd 12606 -> 12755 (+149)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=12755, window_size 12606 -> 12755
+【拥塞避免】收到ACK: cwnd 12755 -> 12903 (+148)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=12903, window_size 12755 -> 12903
+【拥塞避免】收到ACK: cwnd 12903 -> 13049 (+146)
+【窗口更新】收到ACK: advertised_wnd=35750, cwnd=13049, window_size 12903 -> 13049
+【拥塞避免】收到ACK: cwnd 13049 -> 13193 (+144)
+【窗口更新】收到ACK: advertised_wnd=34375, cwnd=13193, window_size 13049 -> 13193
+【拥塞避免】收到ACK: cwnd 13193 -> 13336 (+143)
+【窗口更新】收到ACK: advertised_wnd=33000, cwnd=13336, window_size 13193 -> 13336
+【拥塞避免】收到ACK: cwnd 13336 -> 13477 (+141)
+【窗口更新】收到ACK: advertised_wnd=32857, cwnd=13477, window_size 13336 -> 13477
+【tju_send】复制数据前: sending_len=111034, len=10000, 总长度=121034
+【tju_send】复制数据后: sending_len=121034
+【tju_send】复制数据前: sending_len=121034, len=10000, 总长度=131034
+【tju_send】复制数据后: sending_len=131034
+【拥塞避免】收到ACK: cwnd 13477 -> 13617 (+140)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=13617, window_size 13477 -> 13617
+【tju_send】复制数据前: sending_len=129659, len=10000, 总长度=139659
+【tju_send】复制数据后: sending_len=139659
+【发送线程】准备发送: sending_len=139659, unacked=4125, window_size=13617, cwnd=13617
+【发送线程】计算发送量: available_wnd=9492, remaining_data=135534, data_send_len=9492
+DEBUG: sending_len=139659, nextseq=234466, base=230341, cleaned_len=230341
+DEBUG: available_wnd=9492, total_unsent_data=135534, data_send_len=9492
+【发送线程】分包发送: seq=234466, dlen=1375, nextseq更新为235841
+【发送线程】分包发送: seq=235841, dlen=1375, nextseq更新为237216
+【发送线程】分包发送: seq=237216, dlen=1375, nextseq更新为238591
+【发送线程】分包发送: seq=238591, dlen=1375, nextseq更新为239966
+【发送线程】分包发送: seq=239966, dlen=1375, nextseq更新为241341
+【发送线程】分包发送: seq=241341, dlen=1375, nextseq更新为242716
+【发送线程】分包发送: seq=242716, dlen=1242, nextseq更新为243958
+【发送线程】等待条件: sending_len=139659, unacked=13617, window_size=13617
+【拥塞避免】收到ACK: cwnd 13617 -> 13755 (+138)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=13755, window_size 13617 -> 13755
+【拥塞避免】收到ACK: cwnd 13755 -> 13892 (+137)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=13892, window_size 13755 -> 13892
+【发送线程】准备发送: sending_len=135534, unacked=9492, window_size=13892, cwnd=13892
+【发送线程】计算发送量: available_wnd=4400, remaining_data=126042, data_send_len=4400
+DEBUG: sending_len=135534, nextseq=243958, base=234466, cleaned_len=234466
+DEBUG: available_wnd=4400, total_unsent_data=126042, data_send_len=4400
+【发送线程】分包发送: seq=243958, dlen=1375, nextseq更新为245333
+【发送线程】分包发送: seq=245333, dlen=1375, nextseq更新为246708
+【发送线程】分包发送: seq=246708, dlen=1375, nextseq更新为248083
+【发送线程】分包发送: seq=248083, dlen=275, nextseq更新为248358
+【发送线程】等待条件: sending_len=135534, unacked=13892, window_size=13892
+【拥塞避免】收到ACK: cwnd 13892 -> 14028 (+136)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=14028, window_size 13892 -> 14028
+【拥塞避免】收到ACK: cwnd 14028 -> 14162 (+134)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=14162, window_size 14028 -> 14162
+【拥塞避免】收到ACK: cwnd 14162 -> 14295 (+133)
+【窗口更新】收到ACK: advertised_wnd=39875, cwnd=14295, window_size 14162 -> 14295
+【拥塞避免】收到ACK: cwnd 14295 -> 14427 (+132)
+【窗口更新】收到ACK: advertised_wnd=38500, cwnd=14427, window_size 14295 -> 14427
+【拥塞避免】收到ACK: cwnd 14427 -> 14558 (+131)
+【窗口更新】收到ACK: advertised_wnd=37125, cwnd=14558, window_size 14427 -> 14558
+【拥塞避免】收到ACK: cwnd 14558 -> 14687 (+129)
+【窗口更新】收到ACK: advertised_wnd=35750, cwnd=14687, window_size 14558 -> 14687
+【拥塞避免】收到ACK: cwnd 14687 -> 14815 (+128)
+【窗口更新】收到ACK: advertised_wnd=34508, cwnd=14815, window_size 14687 -> 14815
+【发送线程】准备发送: sending_len=126042, unacked=4400, window_size=14815, cwnd=14815
+【发送线程】计算发送量: available_wnd=10415, remaining_data=121642, data_send_len=10415
+DEBUG: sending_len=126042, nextseq=248358, base=243958, cleaned_len=243958
+DEBUG: available_wnd=10415, total_unsent_data=121642, data_send_len=10415
+【发送线程】分包发送: seq=248358, dlen=1375, nextseq更新为249733
+【发送线程】分包发送: seq=249733, dlen=1375, nextseq更新为251108
+【发送线程】分包发送: seq=251108, dlen=1375, nextseq更新为252483
+【发送线程】分包发送: seq=252483, dlen=1375, nextseq更新为253858
+【发送线程】分包发送: seq=253858, dlen=1375, nextseq更新为255233
+【发送线程】分包发送: seq=255233, dlen=1375, nextseq更新为256608
+【发送线程】分包发送: seq=256608, dlen=1375, nextseq更新为257983
+【发送线程】分包发送: seq=257983, dlen=790, nextseq更新为258773
+【发送线程】等待条件: sending_len=126042, unacked=14815, window_size=14815
+【tju_send】复制数据前: sending_len=126042, len=10000, 总长度=136042
+【tju_send】复制数据后: sending_len=136042
+【拥塞避免】收到ACK: cwnd 14815 -> 14942 (+127)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=14942, window_size 14815 -> 14942
+【拥塞避免】收到ACK: cwnd 14942 -> 15068 (+126)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=15068, window_size 14942 -> 15068
+【拥塞避免】收到ACK: cwnd 15068 -> 15193 (+125)
+【窗口更新】收到ACK: advertised_wnd=39600, cwnd=15193, window_size 15068 -> 15193
+【发送线程】准备发送: sending_len=131642, unacked=10415, window_size=15193, cwnd=15193
+【发送线程】计算发送量: available_wnd=4778, remaining_data=121227, data_send_len=4778
+DEBUG: sending_len=131642, nextseq=258773, base=248358, cleaned_len=248358
+DEBUG: available_wnd=4778, total_unsent_data=121227, data_send_len=4778
+【发送线程】分包发送: seq=258773, dlen=1375, nextseq更新为260148
+【发送线程】分包发送: seq=260148, dlen=1375, nextseq更新为261523
+【发送线程】分包发送: seq=261523, dlen=1375, nextseq更新为262898
+【发送线程】分包发送: seq=262898, dlen=653, nextseq更新为263551
+【发送线程】等待条件: sending_len=131642, unacked=15193, window_size=15193
+【拥塞避免】收到ACK: cwnd 15193 -> 15317 (+124)
+【窗口更新】收到ACK: advertised_wnd=42625, cwnd=15317, window_size 15193 -> 15317
+【拥塞避免】收到ACK: cwnd 15317 -> 15440 (+123)
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=15440, window_size 15317 -> 15440
+【快速重传】触发快速重传: seq=251108, base=251108, 重复ACK计数=3
+【快速重传】开始处理快速重传: seq=251108
+【快速重传】查找包: retransmit_seq=251108
+【快速重传】检查包[0]: seq=256608, acked=0
+【快速重传】检查包[1375]: seq=255233, acked=0
+【快速重传】检查包[2750]: seq=253858, acked=0
+【快速重传】检查包[4125]: seq=252483, acked=0
+【快速重传】检查包[5500]: seq=251108, acked=0
+【快速重传】找到要重传的包: seq=251108, data_len=1375, retransmit_count=0
+【快速重传】发送重传包: seq=251108, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=251108, 重传次数=1
+【快速重传】拥塞控制: ssthresh 12147 -> 7720, cwnd 15440 -> 19565, 状态 1 -> 2
+【快速重传】窗口更新: advertised_wnd=41250, cwnd=19565, window_size 15440 -> 19565
+【tju_send】复制数据前: sending_len=128892, len=10000, 总长度=138892
+【tju_send】复制数据后: sending_len=138892
+【发送线程】准备发送: sending_len=138892, unacked=12443, window_size=19565, cwnd=19565
+【发送线程】计算发送量: available_wnd=7122, remaining_data=126449, data_send_len=7122
+DEBUG: sending_len=138892, nextseq=263551, base=251108, cleaned_len=251108
+DEBUG: available_wnd=7122, total_unsent_data=126449, data_send_len=7122
+【快速重传】触发快速重传: seq=251108, base=251108, 重复ACK计数=3
+【快速恢复】收到重复ACK: cwnd 19565 -> 20940 (+1375)
+【快速重传】开始处理快速重传: seq=251108
+【快速重传】查找包: retransmit_seq=251108
+【快速重传】检查包[0]: seq=256608, acked=0
+【快速重传】检查包[1375]: seq=255233, acked=0
+【快速重传】检查包[2750]: seq=253858, acked=0
+【快速重传】检查包[4125]: seq=252483, acked=0
+【快速重传】检查包[5500]: seq=251108, acked=0
+【快速重传】找到要重传的包: seq=251108, data_len=1375, retransmit_count=1
+【快速重传】发送重传包: seq=251108, data_len=1375, total_len=1395
+【快速重传】重传完成: seq=251108, 重传次数=2
+【快速重传】拥塞控制: ssthresh 7720 -> 10470, cwnd 19565 -> 25065, 状态 2 -> 2
+【快速重传】窗口更新: advertised_wnd=37125, cwnd=25065, window_size 19565 -> 25065
+【快速恢复->拥塞避免】收到新ACK: cwnd 25065 -> 10470, 状态 2 -> 1
+【窗口更新】收到ACK: advertised_wnd=41250, cwnd=10470, window_size 25065 -> 10470
+【超时重传】开始处理超时重传: seq=256608, retransmit_count=0
+【超时重传】RTO更
